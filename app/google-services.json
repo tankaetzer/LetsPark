@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1013356654091",
+    "firebase_url": "https://letspark-7d92d.firebaseio.com",
+    "project_id": "letspark-7d92d",
+    "storage_bucket": "letspark-7d92d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1013356654091:android:59fcfd4b24e46895",
+        "android_client_info": {
+          "package_name": "com.example.android.letspark"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1013356654091-haijbb4q5835310em9em1q7ehfkc0eqc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.android.letspark",
+            "certificate_hash": "4aa7c5c82b4c801e707951e0f654c3bd487474af"
+          }
+        },
+        {
+          "client_id": "1013356654091-uc3rkmc47qqn6ltm6ne2374d91s25m7r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDT7cy16ld1JB2MdMHCLmaO9_wULfPYZ3A"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1013356654091-uc3rkmc47qqn6ltm6ne2374d91s25m7r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
