@@ -11,6 +11,8 @@ import com.example.android.letspark.utility.ActivityUtils;
 
 public class EmptyParkingBaysActivity extends AppCompatActivity {
 
+    public static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+
     private EmptyParkingBaysPresenter emptyParkingBaysPresenter;
 
     @Override

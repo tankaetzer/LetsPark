@@ -20,6 +20,10 @@ public interface EmptyParkingBaysContract {
         void showLoadingEmptyParkingBaysError();
 
         GoogleMap getMap();
+
+        void showErrorMessageWithAction();
+
+        void askLocationPermission();
     }
 
     interface Presenter extends BasePresenter {

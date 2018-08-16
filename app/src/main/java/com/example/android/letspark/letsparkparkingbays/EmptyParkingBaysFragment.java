@@ -1,10 +1,13 @@
 package com.example.android.letspark.letsparkparkingbays;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +22,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
+
+import static com.example.android.letspark.letsparkparkingbays.EmptyParkingBaysActivity.LOCATION_PERMISSION_REQUEST_CODE;
 
 /**
  * Display markers on Google map. Each marker is an empty parking bay.
@@ -65,8 +70,9 @@ public class EmptyParkingBaysFragment extends Fragment implements EmptyParkingBa
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        askLocationPermission();
     }
 
     @Override
@@ -93,7 +99,7 @@ public class EmptyParkingBaysFragment extends Fragment implements EmptyParkingBa
 
     @Override
     public void showLoadingEmptyParkingBaysError() {
-        showErrorMessage("Error while loading empty parking bays");
+        showMessage(getString(R.string.error_loading_empty_parking_bays));
     }
 
     @Override
@@ -101,7 +107,59 @@ public class EmptyParkingBaysFragment extends Fragment implements EmptyParkingBa
         return googleMap;
     }
 
-    private void showErrorMessage(String errorMessage) {
-        Snackbar.make(root, errorMessage, Snackbar.LENGTH_LONG).show();
+    @Override
+    public void showErrorMessageWithAction() {
+        Snackbar.make(root, R.string.permission_rationale_location,
+                Snackbar.LENGTH_INDEFINITE).setAction(R.string.ok,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // Request the permission
+                        requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                LOCATION_PERMISSION_REQUEST_CODE);
+                    }
+                }).show();
+    }
+
+    private void showMessage(String message) {
+        Snackbar.make(root, message, Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void askLocationPermission() {
+        // Check if the access fine location permission has been granted.
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // True if permission is not granted since user has previously denied the request.
+            if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                showErrorMessageWithAction();
+            } else {
+                // Request the permission
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        LOCATION_PERMISSION_REQUEST_CODE);
+            }
+        } else {
+            // Permission has already been granted.
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            // Request for access fine location permission.
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission has been granted.
+                showMessage(getString(R.string.permission_location_granted));
+            } else if (!shouldShowRequestPermissionRationale(
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                showMessage(getString(R.string.permission_location_never_show_again));
+            } else {
+                // Permission request was denied.
+                showMessage(getString(R.string.permission_location_denied));
+            }
+            return;
+        }
     }
 }
