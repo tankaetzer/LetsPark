@@ -59,6 +59,9 @@ dependencies {
     // Google Maps Android API utility library
     implementation 'com.google.maps.android:android-maps-utils:0.5+'
 
+    // Google Location and Activity Recognition
+    implementation 'com.google.android.gms:play-services-location:15.0.1'
+
     // Dependencies for local unit tests
     testImplementation 'junit:junit:4.12'
     testImplementation "org.mockito:mockito-all:1.10.19"
