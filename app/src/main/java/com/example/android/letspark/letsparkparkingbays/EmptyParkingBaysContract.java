@@ -30,6 +30,10 @@ public interface EmptyParkingBaysContract {
     interface Presenter extends BasePresenter {
         void loadEmptyParkingBays();
 
+        void createLocationRequest();
+
+        void askChangeLocationSetting(final Activity activity, Context context);
+
         void askLocationPermission(Activity activity, Context context);
     }
 }

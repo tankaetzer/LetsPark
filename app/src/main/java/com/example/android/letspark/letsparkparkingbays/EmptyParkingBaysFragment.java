@@ -1,6 +1,7 @@
 package com.example.android.letspark.letsparkparkingbays;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -23,6 +24,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.List;
 
 import static com.example.android.letspark.letsparkparkingbays.EmptyParkingBaysActivity.LOCATION_PERMISSION_REQUEST_CODE;
+import static com.example.android.letspark.letsparkparkingbays.EmptyParkingBaysActivity.REQUEST_CHECK_SETTINGS;
 
 /**
  * Display markers on Google map. Each marker is an empty parking bay.
@@ -71,7 +73,7 @@ public class EmptyParkingBaysFragment extends Fragment implements EmptyParkingBa
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        emptyParkingBaysPresenter.askLocationPermission(getActivity(), getContext());
+        emptyParkingBaysPresenter.askChangeLocationSetting(getActivity(), getContext());
     }
 
     @Override
@@ -83,7 +85,8 @@ public class EmptyParkingBaysFragment extends Fragment implements EmptyParkingBa
                     .snippet(emptyParkingBayList.get(index).getSnippet())
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
         }
-        getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(emptyParkingBayList.get(0).getPosition(), 16));
+        getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(emptyParkingBayList.get(0).
+                getPosition(), 16));
     }
 
     @Override
@@ -122,6 +125,13 @@ public class EmptyParkingBaysFragment extends Fragment implements EmptyParkingBa
 
     private void showMessage(String message) {
         Snackbar.make(root, message, Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CHECK_SETTINGS) {
+            emptyParkingBaysPresenter.askLocationPermission(getActivity(), getContext());
+        }
     }
 
     @Override

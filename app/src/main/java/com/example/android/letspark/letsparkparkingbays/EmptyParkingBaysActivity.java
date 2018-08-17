@@ -1,5 +1,6 @@
 package com.example.android.letspark.letsparkparkingbays;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
@@ -13,6 +14,8 @@ import com.example.android.letspark.utility.ActivityUtils;
 public class EmptyParkingBaysActivity extends AppCompatActivity {
 
     public static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+
+    public static final int REQUEST_CHECK_SETTINGS = 2;
 
     private EmptyParkingBaysFragment emptyParkingBaysFragment;
 
@@ -42,6 +45,15 @@ public class EmptyParkingBaysActivity extends AppCompatActivity {
         // Create the presenter.
         emptyParkingBaysPresenter = new EmptyParkingBaysPresenter(
                 EmptyParkingBaysRemoteDataSource.getInstance(), emptyParkingBaysFragment);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CHECK_SETTINGS) {
+            emptyParkingBaysFragment.onActivityResult(requestCode, resultCode, data);
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     @Override

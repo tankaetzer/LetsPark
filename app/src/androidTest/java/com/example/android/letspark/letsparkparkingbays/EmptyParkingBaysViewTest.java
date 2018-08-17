@@ -171,4 +171,23 @@ public class EmptyParkingBaysViewTest {
                     "utilise Google Map features", result.getText());
         }
     }
+
+    @Test
+    public void disableLocationAndAskForLocationSettingDialog() throws UiObjectNotFoundException {
+        // Opens the notification shade and find "Location" button.
+        device.openNotification();
+        device.wait(Until.hasObject(By.text("Location")), LAUNCH_TIMEOUT);
+        UiObject location = device.findObject(new UiSelector().text("Location"));
+
+        // If current "Location" button in notification shade is enabled, disable it.
+        if (location.isEnabled()) {
+            location.click();
+        }
+
+        setUp();
+        UiObject result = device.findObject(
+                new UiSelector().resourceId("com.google.android.gms:id/message"));
+        assertEquals("For best results, turn on device location, which uses Google’s " +
+                "location service. ", result.getText());
+    }
 }
