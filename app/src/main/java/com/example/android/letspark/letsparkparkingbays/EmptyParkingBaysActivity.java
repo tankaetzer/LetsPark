@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 
 import com.example.android.letspark.R;
 import com.example.android.letspark.data.EmptyParkingBaysRemoteDataSource;
+import com.example.android.letspark.service.LocationService;
 import com.example.android.letspark.utility.ActivityUtils;
 
 public class EmptyParkingBaysActivity extends AppCompatActivity {
@@ -44,7 +45,8 @@ public class EmptyParkingBaysActivity extends AppCompatActivity {
 
         // Create the presenter.
         emptyParkingBaysPresenter = new EmptyParkingBaysPresenter(
-                EmptyParkingBaysRemoteDataSource.getInstance(), emptyParkingBaysFragment);
+                EmptyParkingBaysRemoteDataSource.getInstance(), emptyParkingBaysFragment,
+                LocationService.getInstance(this, getApplicationContext()));
     }
 
     @Override

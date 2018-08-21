@@ -1,8 +1,5 @@
 package com.example.android.letspark.letsparkparkingbays;
 
-import android.app.Activity;
-import android.content.Context;
-
 import com.example.android.letspark.data.EmptyParkingBay;
 import com.example.android.letspark.utility.BasePresenter;
 import com.example.android.letspark.utility.BaseView;
@@ -25,15 +22,21 @@ public interface EmptyParkingBaysContract {
         GoogleMap getMap();
 
         void showErrorMessageWithAction();
+
+        boolean checkSelfPermission();
+
+        boolean shouldShowRequestPermissionRationale();
+
+        void requestLocationPermissions();
+
+        void showLocationSettingDialog(Exception e);
     }
 
     interface Presenter extends BasePresenter {
         void loadEmptyParkingBays();
 
-        void createLocationRequest();
+        void askLocationSetting();
 
-        void askChangeLocationSetting(final Activity activity, Context context);
-
-        void askLocationPermission(Activity activity, Context context);
+        void askLocationPermission(boolean notGranted, boolean showRequestPermissionRationale);
     }
 }

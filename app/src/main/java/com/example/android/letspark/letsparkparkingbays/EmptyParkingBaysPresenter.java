@@ -1,30 +1,10 @@
 package com.example.android.letspark.letsparkparkingbays;
 
-import android.Manifest;
-import android.app.Activity;
-import android.content.Context;
-import android.content.IntentSender;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-
 import com.example.android.letspark.data.EmptyParkingBay;
 import com.example.android.letspark.data.EmptyParkingBaysDataSource;
-import com.google.android.gms.common.api.ResolvableApiException;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResponse;
-import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
+import com.example.android.letspark.service.Service;
 
 import java.util.List;
-
-import static com.example.android.letspark.letsparkparkingbays.EmptyParkingBaysActivity.LOCATION_PERMISSION_REQUEST_CODE;
-import static com.example.android.letspark.letsparkparkingbays.EmptyParkingBaysActivity.REQUEST_CHECK_SETTINGS;
 
 /**
  * Listens to user actions from the UI (EmptyParkingBaysFragment), retrieves the data and updates
@@ -36,12 +16,14 @@ public class EmptyParkingBaysPresenter implements EmptyParkingBaysContract.Prese
 
     private EmptyParkingBaysContract.View emptyParkingBaysView;
 
-    private LocationRequest locationRequest;
+    private Service locationService;
 
     public EmptyParkingBaysPresenter(EmptyParkingBaysDataSource emptyParkingBaysRemoteDataSource,
-                                     EmptyParkingBaysContract.View emptyParkingBaysView) {
+                                     EmptyParkingBaysContract.View emptyParkingBaysView,
+                                     Service locationService) {
         this.emptyParkingBaysRemoteDataSource = emptyParkingBaysRemoteDataSource;
         this.emptyParkingBaysView = emptyParkingBaysView;
+        this.locationService = locationService;
 
         emptyParkingBaysView.setPresenter(this);
     }
@@ -68,65 +50,37 @@ public class EmptyParkingBaysPresenter implements EmptyParkingBaysContract.Prese
     }
 
     @Override
-    public void createLocationRequest() {
-        locationRequest = new LocationRequest();
-        locationRequest.setInterval(10000);
-        locationRequest.setFastestInterval(5000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-    }
+    public void askLocationSetting() {
+        locationService.createLocationRequest();
 
-    @Override
-    public void askChangeLocationSetting(final Activity activity, final Context context) {
-        createLocationRequest();
-
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(locationRequest);
+        locationService.setBuilder();
 
         // Check whether current location settings are satisfied.
-        SettingsClient client = LocationServices.getSettingsClient(activity);
-        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
+        locationService.checkCurrentLocationSetting();
 
-        task.addOnSuccessListener(activity, new OnSuccessListener<LocationSettingsResponse>() {
+        locationService.getLocationSettingResponse(new Service.getLocationSettingResponseCallback() {
             @Override
-            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                // All location settings are satisfied. The client can initialize
-                // location requests here.
-                askLocationPermission(activity, context);
+            public void onSatisfyLocationSetting() {
+                askLocationPermission(emptyParkingBaysView.checkSelfPermission(),
+                        emptyParkingBaysView.shouldShowRequestPermissionRationale());
             }
-        });
 
-        task.addOnFailureListener(activity, new OnFailureListener() {
             @Override
-            public void onFailure(@NonNull Exception e) {
-                if (e instanceof ResolvableApiException) {
-                    // Location settings are not satisfied, but this can be fixed
-                    // by showing the user a dialog.
-                    try {
-                        // Show the dialog by calling startResolutionForResult(),
-                        // and check the result in onActivityResult().
-                        ResolvableApiException resolvable = (ResolvableApiException) e;
-                        resolvable.startResolutionForResult(activity,
-                                REQUEST_CHECK_SETTINGS);
-                    } catch (IntentSender.SendIntentException sendEx) {
-                        // Ignore the error.
-                    }
-                }
+            public void onNotSatisfyLocationSetting(Exception e) {
+                emptyParkingBaysView.showLocationSettingDialog(e);
             }
         });
     }
 
     @Override
-    public void askLocationPermission(Activity activity, Context context) {
+    public void askLocationPermission(boolean notGranted, boolean showRequestPermissionRationale) {
         // Check if the access fine location permission has been granted.
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+        if (notGranted) {
             // True if permission is not granted since user has previously denied the request.
-            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCESS_FINE_LOCATION)) {
+            if (showRequestPermissionRationale) {
                 emptyParkingBaysView.showErrorMessageWithAction();
             } else {
-                // Request the permission
-                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        LOCATION_PERMISSION_REQUEST_CODE);
+                emptyParkingBaysView.requestLocationPermissions();
             }
         } else {
             // Permission has already been granted.
