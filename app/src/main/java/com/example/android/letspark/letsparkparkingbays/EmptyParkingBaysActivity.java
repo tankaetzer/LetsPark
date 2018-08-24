@@ -7,10 +7,13 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import com.example.android.letspark.LetsParkApplication;
 import com.example.android.letspark.R;
 import com.example.android.letspark.data.EmptyParkingBaysRemoteDataSource;
 import com.example.android.letspark.service.LocationService;
 import com.example.android.letspark.utility.ActivityUtils;
+
+import javax.inject.Inject;
 
 public class EmptyParkingBaysActivity extends AppCompatActivity {
 
@@ -20,7 +23,11 @@ public class EmptyParkingBaysActivity extends AppCompatActivity {
 
     private EmptyParkingBaysFragment emptyParkingBaysFragment;
 
-    private EmptyParkingBaysPresenter emptyParkingBaysPresenter;
+    @Inject
+    LocationService locationService;
+
+    @Inject
+    EmptyParkingBaysRemoteDataSource emptyParkingBaysRemoteDataSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +50,16 @@ public class EmptyParkingBaysActivity extends AppCompatActivity {
                     getSupportFragmentManager(), emptyParkingBaysFragment, R.id.contentFrame);
         }
 
+
+        // Get the instance of LetsParkComponent to connect between our dependency provider
+        // and dependency consumer.
+        ((LetsParkApplication) getApplication()).getLetsParkComponent()
+                .inject(this);
+
+        // TODO: Improve code by injecting dependency using Dagger 2
         // Create the presenter.
-        emptyParkingBaysPresenter = new EmptyParkingBaysPresenter(
-                EmptyParkingBaysRemoteDataSource.getInstance(), emptyParkingBaysFragment,
-                LocationService.getInstance(this, getApplicationContext()));
+        new EmptyParkingBaysPresenter(emptyParkingBaysRemoteDataSource,
+                emptyParkingBaysFragment, locationService);
     }
 
     @Override

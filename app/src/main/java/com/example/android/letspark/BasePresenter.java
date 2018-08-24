@@ -1,4 +1,4 @@
-package com.example.android.letspark.utility;
+package com.example.android.letspark;
 
 public interface BasePresenter {
 

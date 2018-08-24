@@ -1,8 +1,8 @@
 package com.example.android.letspark.letsparkparkingbays;
 
+import com.example.android.letspark.BasePresenter;
+import com.example.android.letspark.BaseView;
 import com.example.android.letspark.data.EmptyParkingBay;
-import com.example.android.letspark.utility.BasePresenter;
-import com.example.android.letspark.utility.BaseView;
 import com.google.android.gms.maps.GoogleMap;
 
 import java.util.List;

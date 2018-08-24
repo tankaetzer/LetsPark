@@ -17,21 +17,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class EmptyParkingBaysRemoteDataSource implements EmptyParkingBaysDataSource {
 
-    private static EmptyParkingBaysRemoteDataSource INSTANCE = null;
-
     private List<EmptyParkingBay> emptyParkingBayList;
-
-    private EmptyParkingBaysRemoteDataSource() {
-        // Prevent direct instantiation.
-    }
-
-    public static EmptyParkingBaysRemoteDataSource getInstance() {
-
-        if (INSTANCE == null) {
-            INSTANCE = new EmptyParkingBaysRemoteDataSource();
-        }
-        return INSTANCE;
-    }
 
     /**
      * load empty parking bays from remote data source.
