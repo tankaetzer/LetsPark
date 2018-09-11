@@ -13,7 +13,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class ActivityUtils {
 
     /**
-     * Add fragment to an existing ViewGroup with id frameId by fragmentManager
+     * Add fragment to an existing ViewGroup with id frameId by fragmentManager.
      */
     public static void addFragmentToActivity(@NonNull FragmentManager fragmentManager,
                                              @NonNull Fragment fragment, int frameId) {

@@ -7,11 +7,17 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import com.example.android.letspark.LetsParkApplication;
+import com.example.android.letspark.LetsParkApp;
 import com.example.android.letspark.R;
+import com.example.android.letspark.data.EmptyParkingBay;
 import com.example.android.letspark.data.EmptyParkingBaysRemoteDataSource;
+import com.example.android.letspark.service.ConnectivityService;
+import com.example.android.letspark.service.DistanceMatrixService;
 import com.example.android.letspark.service.LocationService;
 import com.example.android.letspark.utility.ActivityUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -21,13 +27,19 @@ public class EmptyParkingBaysActivity extends AppCompatActivity {
 
     public static final int REQUEST_CHECK_SETTINGS = 2;
 
-    private EmptyParkingBaysFragment emptyParkingBaysFragment;
+    @Inject
+    EmptyParkingBaysRemoteDataSource emptyParkingBaysRemoteDataSource;
 
     @Inject
     LocationService locationService;
 
     @Inject
-    EmptyParkingBaysRemoteDataSource emptyParkingBaysRemoteDataSource;
+    DistanceMatrixService distanceMatrixService;
+
+    @Inject
+    ConnectivityService connectivityService;
+    List<EmptyParkingBay> emptyParkingBayList = new ArrayList<>();
+    private EmptyParkingBaysFragment emptyParkingBaysFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,16 +62,16 @@ public class EmptyParkingBaysActivity extends AppCompatActivity {
                     getSupportFragmentManager(), emptyParkingBaysFragment, R.id.contentFrame);
         }
 
-
-        // Get the instance of LetsParkComponent to connect between our dependency provider
+        // Get the instance of LetsParkAppComponent to connect between our dependency provider
         // and dependency consumer.
-        ((LetsParkApplication) getApplication()).getLetsParkComponent()
+        ((LetsParkApp) getApplication()).getLetsParkAppComponent()
                 .inject(this);
 
         // TODO: Improve code by injecting dependency using Dagger 2
         // Create the presenter.
         new EmptyParkingBaysPresenter(emptyParkingBaysRemoteDataSource,
-                emptyParkingBaysFragment, locationService);
+                emptyParkingBaysFragment, locationService, distanceMatrixService,
+                connectivityService);
     }
 
     @Override

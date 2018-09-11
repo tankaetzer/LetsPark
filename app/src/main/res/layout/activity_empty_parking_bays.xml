@@ -13,9 +13,11 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <!-- app:elevation="0dp" remove shadow under toolbar -->
         <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:elevation="0dp">
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -27,10 +29,26 @@
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
         </android.support.design.widget.AppBarLayout>
 
-        <FrameLayout
-            android:id="@+id/contentFrame"
+        <android.support.design.widget.CoordinatorLayout
+            android:id="@+id/coordinatorLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
+
+            <FrameLayout
+                android:id="@+id/contentFrame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab_pay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/fab_margin"
+                android:src="@drawable/ic_parking_white"
+                app:layout_anchor="@id/contentFrame"
+                app:layout_anchorGravity="bottom|center_horizontal" />
+
+        </android.support.design.widget.CoordinatorLayout>
 
     </LinearLayout>
 

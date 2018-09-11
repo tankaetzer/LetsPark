@@ -1,6 +1,8 @@
 package com.example.android.letspark.data;
 
-import com.example.android.letspark.dependencyinjection.LetsParkApplicationScope;
+import com.example.android.letspark.dependencyinjection.LetsParkAppScope;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import dagger.Module;
 import dagger.Provides;
@@ -14,8 +16,8 @@ import dagger.Provides;
 public class EmptyParkingBaysRemoteDataSourceModule {
 
     @Provides
-    @LetsParkApplicationScope
-    EmptyParkingBaysRemoteDataSource provideEmptyParkingBaysRemoteDataSource() {
-        return new EmptyParkingBaysRemoteDataSource();
+    @LetsParkAppScope
+    DatabaseReference provideDatabaseReference() {
+        return FirebaseDatabase.getInstance().getReference();
     }
 }

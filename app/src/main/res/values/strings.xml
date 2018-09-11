@@ -1,20 +1,25 @@
 <resources>
     <string name="app_name">LetsPark</string>
-    <string name="sign_out">Sign Out</string>
     <string name="title_activity_motorist_home">LetsPark</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
-    <string name="statistics_title">Statistics</string>
-    <string name="history_title">History</string>
-    <string name="History">History</string>
-    <string name="ok">OK</string>
-    <string name="error_loading_empty_parking_bays">Error while loading empty parking bays</string>
+    <string name="action_ok">OK</string>
+    <string name="marker_loading_empty_parking_bays_error">Error while loading empty parking bays</string>
     <string name="permission_rationale_location">Access to the location service is required to show your current location on the map.</string>
     <string name="permission_location_granted">Location permission has been granted.</string>
     <string name="permission_location_never_show_again">Go to Settings and enable the location permission to maximum utilise Google Map features</string>
     <string name="permission_location_denied">Location permission was denied.</string>
+    <string name="marker_distance_duration_calculation_error">Failed to calculate distance, rate and duration. Please enable Wi-Fi or Mobile data</string>
+    <string name="marker_getting_location_msg">Getting location. Please make sure location setting is enabled.</string>
+    <string name="marker_enable_connectivity_error">Please enable Wi-Fi or Mobile data</string>
+    <string name="marker_enable_connectivity_and_location_error">Please enable location and connect to Internet.</string>
+    <string name="marker_default_distance_msg">0.0 km</string>
+    <string name="marker_default_duration_msg">0 mins</string>
+    <string name="marker_per_hour_subtitle">per hour</string>
+    <string name="marker_distance_subtitle">Distance</string>
+    <string name="marker_estimated_time_subtitle">Estimated Time</string>
+    <string name="base_url">https://maps.googleapis.com/maps/api/</string>
 </resources>

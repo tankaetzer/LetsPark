@@ -1,18 +1,57 @@
 package com.example.android.letspark.service;
 
+import com.google.android.gms.location.LocationSettingsResponse;
+
+/**
+ * Interface for location service, distance matrix service and connectivity service.
+ */
 public interface Service {
 
-    void getLocationSettingResponse(getLocationSettingResponseCallback callback);
+    interface LocationService {
+        void getLocationSettingResponse(GetLocationSettingResponseCallback callback);
 
-    void createLocationRequest();
+        void requestLocationUpdates();
 
-    void setBuilder();
+        void newLocationCallback();
 
-    void checkCurrentLocationSetting();
+        void removeLocationUpdates();
 
-    interface getLocationSettingResponseCallback {
-        void onSatisfyLocationSetting();
+        void getLastKnownLocationResponse(GetLastKnownLocationResponseCallback callback);
 
-        void onNotSatisfyLocationSetting(Exception e);
+        interface GetLocationSettingResponseCallback {
+            void onSatisfyLocationSetting(LocationSettingsResponse locationSettingsResponse);
+
+            void onNotSatisfyLocationSetting(Exception e);
+        }
+
+        interface GetLastKnownLocationResponseCallback {
+            void onLastKnownLocationReceived(String originLatLng);
+
+            void onLastKnowLocationIsNull();
+        }
+    }
+
+    interface DistanceMatrixService {
+
+        void getDistanceMatrixResponse(String originLatLng, String destinationLatLng,
+                                       GetDistanceMatrixResponseCallback callback);
+
+        interface GetDistanceMatrixResponseCallback {
+            void onDistanceAndDurationReceived(String distance, String duration);
+
+            void onNoInternet();
+        }
+    }
+
+    interface ConnectivityService {
+        boolean isConnected();
+
+        void getConnectivityStatusResponse(GetConnectivityStatusResponseCallback callback);
+
+        interface GetConnectivityStatusResponseCallback {
+            void onInternetAvailableReceived();
+
+            void onInternetUnavailable();
+        }
     }
 }

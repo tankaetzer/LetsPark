@@ -3,8 +3,11 @@ package com.example.android.letspark.letsparkparkingbays;
 import com.example.android.letspark.data.EmptyParkingBay;
 import com.example.android.letspark.data.EmptyParkingBaysDataSource;
 import com.example.android.letspark.service.Service;
+import com.google.android.gms.location.LocationSettingsResponse;
 
 import java.util.List;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Listens to user actions from the UI (EmptyParkingBaysFragment), retrieves the data and updates
@@ -12,25 +15,33 @@ import java.util.List;
  */
 public class EmptyParkingBaysPresenter implements EmptyParkingBaysContract.Presenter {
 
-    private EmptyParkingBaysDataSource emptyParkingBaysRemoteDataSource;
+    private EmptyParkingBaysDataSource emptyParkingBaysRemoteEmptyParkingBaysDataSource;
 
     private EmptyParkingBaysContract.View emptyParkingBaysView;
 
-    private Service locationService;
+    private Service.LocationService locationService;
 
-    public EmptyParkingBaysPresenter(EmptyParkingBaysDataSource emptyParkingBaysRemoteDataSource,
+    private Service.DistanceMatrixService distanceMatrixService;
+
+    private Service.ConnectivityService connectivityService;
+
+    public EmptyParkingBaysPresenter(EmptyParkingBaysDataSource emptyParkingBaysRemoteEmptyParkingBaysDataSource,
                                      EmptyParkingBaysContract.View emptyParkingBaysView,
-                                     Service locationService) {
-        this.emptyParkingBaysRemoteDataSource = emptyParkingBaysRemoteDataSource;
-        this.emptyParkingBaysView = emptyParkingBaysView;
-        this.locationService = locationService;
+                                     Service.LocationService locationService,
+                                     Service.DistanceMatrixService distanceMatrixService,
+                                     Service.ConnectivityService connectivityService) {
+        this.emptyParkingBaysRemoteEmptyParkingBaysDataSource = checkNotNull(emptyParkingBaysRemoteEmptyParkingBaysDataSource);
+        this.emptyParkingBaysView = checkNotNull(emptyParkingBaysView);
+        this.locationService = checkNotNull(locationService);
+        this.distanceMatrixService = checkNotNull(distanceMatrixService);
+        this.connectivityService = checkNotNull(connectivityService);
 
         emptyParkingBaysView.setPresenter(this);
     }
 
     @Override
     public void loadEmptyParkingBays() {
-        emptyParkingBaysRemoteDataSource.getEmptyParkingBays(new EmptyParkingBaysDataSource.
+        emptyParkingBaysRemoteEmptyParkingBaysDataSource.getEmptyParkingBays(new EmptyParkingBaysDataSource.
                 LoadEmptyParkingBaysCallBack() {
             @Override
             public void onEmptyParkingBaysLoaded(List<EmptyParkingBay> emptyParkingBayList) {
@@ -46,23 +57,18 @@ public class EmptyParkingBaysPresenter implements EmptyParkingBaysContract.Prese
 
     @Override
     public void start() {
-        loadEmptyParkingBays();
+        checkConnectivity();
     }
 
     @Override
     public void askLocationSetting() {
-        locationService.createLocationRequest();
-
-        locationService.setBuilder();
-
-        // Check whether current location settings are satisfied.
-        locationService.checkCurrentLocationSetting();
-
-        locationService.getLocationSettingResponse(new Service.getLocationSettingResponseCallback() {
+        locationService.getLocationSettingResponse(new Service.LocationService.
+                GetLocationSettingResponseCallback() {
             @Override
-            public void onSatisfyLocationSetting() {
+            public void onSatisfyLocationSetting(LocationSettingsResponse locationSettingsResponse) {
                 askLocationPermission(emptyParkingBaysView.checkSelfPermission(),
-                        emptyParkingBaysView.shouldShowRequestPermissionRationale());
+                        emptyParkingBaysView
+                                .shouldShowRequestPermissionRationale());
             }
 
             @Override
@@ -78,12 +84,117 @@ public class EmptyParkingBaysPresenter implements EmptyParkingBaysContract.Prese
         if (notGranted) {
             // True if permission is not granted since user has previously denied the request.
             if (showRequestPermissionRationale) {
-                emptyParkingBaysView.showErrorMessageWithAction();
+                emptyParkingBaysView.showLocationErrMsgWithAction();
             } else {
                 emptyParkingBaysView.requestLocationPermissions();
             }
         } else {
             // Permission has already been granted.
+            loadEmptyParkingBays();
         }
+    }
+
+    /**
+     * Request distance and duration from Google Distance Matrix API.
+     *
+     * @param destinationLatLng destination latitude longitude
+     * @param rate              parking price rate for an hour.
+     */
+    @Override
+    public void requestDistanceMatrix(final String destinationLatLng, final double rate) {
+        emptyParkingBaysView.showProgressBar(true);
+        locationService.getLastKnownLocationResponse(new Service.LocationService
+                .GetLastKnownLocationResponseCallback() {
+            @Override
+            public void onLastKnownLocationReceived(String originLatLng) {
+                getDistanceMatrixResponse(originLatLng, destinationLatLng, rate);
+            }
+
+            @Override
+            public void onLastKnowLocationIsNull() {
+                boolean isInternetConnect = getConnectivityStatus();
+                processOnLastKnowLocationIsNullView(isInternetConnect, rate);
+            }
+        });
+    }
+
+    @Override
+    public void createLocationCallback() {
+        locationService.newLocationCallback();
+    }
+
+    @Override
+    public void startLocationUpdate() {
+        locationService.requestLocationUpdates();
+    }
+
+    @Override
+    public void stopLocationUpdate() {
+        locationService.removeLocationUpdates();
+    }
+
+    @Override
+    public boolean getConnectivityStatus() {
+        return connectivityService.isConnected();
+    }
+
+    @Override
+    public void checkConnectivity() {
+        connectivityService.getConnectivityStatusResponse(new Service.ConnectivityService
+                .GetConnectivityStatusResponseCallback() {
+            @Override
+            public void onInternetAvailableReceived() {
+                askLocationSetting();
+            }
+
+            @Override
+            public void onInternetUnavailable() {
+                emptyParkingBaysView.showConnectivityErrMsg();
+            }
+        });
+    }
+
+    @Override
+    public void hideDistanceDurationRateTextviewAndProgressbar() {
+        emptyParkingBaysView.showProgressBar(false);
+        emptyParkingBaysView.showDistanceDurationAndRate(false);
+    }
+
+    @Override
+    public void processOnLastKnowLocationIsNullView(boolean isInternetConnect, double rate) {
+
+        emptyParkingBaysView.showProgressBar(false);
+
+        if (isInternetConnect) {
+            emptyParkingBaysView.setRateAndDefaultDistanceDuration(rate);
+            emptyParkingBaysView.showDistanceDurationAndRate(true);
+            emptyParkingBaysView.showGettingLocationMsg();
+        } else {
+            emptyParkingBaysView.showDistanceDurationAndRate(false);
+            emptyParkingBaysView.showConnectivityAndLocationErrMsg();
+        }
+    }
+
+    @Override
+    public void getDistanceMatrixResponse(String originLatLng, String destinationLatLng,
+                                          final double rate) {
+        distanceMatrixService.getDistanceMatrixResponse(originLatLng, destinationLatLng,
+                new Service.DistanceMatrixService.GetDistanceMatrixResponseCallback() {
+                    @Override
+                    public void onDistanceAndDurationReceived(String distance,
+                                                              String duration) {
+                        emptyParkingBaysView.showProgressBar(false);
+                        emptyParkingBaysView.setDistanceDurationAndRate(distance, duration,
+                                rate);
+                        emptyParkingBaysView.showDistanceDurationAndRate(true);
+                    }
+
+                    @Override
+                    public void onNoInternet() {
+                        emptyParkingBaysView.showProgressBar(false);
+                        emptyParkingBaysView.showDistanceDurationAndRate(false);
+                        emptyParkingBaysView.showDistanceDurationCalculationErrMsg();
+                    }
+                });
     }
 }

@@ -21,7 +21,7 @@ public interface EmptyParkingBaysContract {
 
         GoogleMap getMap();
 
-        void showErrorMessageWithAction();
+        void showLocationErrMsgWithAction();
 
         boolean checkSelfPermission();
 
@@ -30,6 +30,22 @@ public interface EmptyParkingBaysContract {
         void requestLocationPermissions();
 
         void showLocationSettingDialog(Exception e);
+
+        void setDistanceDurationAndRate(String distance, String duration, double rate);
+
+        void showDistanceDurationAndRate(boolean show);
+
+        void showProgressBar(boolean show);
+
+        void showDistanceDurationCalculationErrMsg();
+
+        void showGettingLocationMsg();
+
+        void showConnectivityAndLocationErrMsg();
+
+        void showConnectivityErrMsg();
+
+        void setRateAndDefaultDistanceDuration(double rate);
     }
 
     interface Presenter extends BasePresenter {
@@ -38,5 +54,23 @@ public interface EmptyParkingBaysContract {
         void askLocationSetting();
 
         void askLocationPermission(boolean notGranted, boolean showRequestPermissionRationale);
+
+        void requestDistanceMatrix(String destinationLatLng, double rate);
+
+        void startLocationUpdate();
+
+        void createLocationCallback();
+
+        void stopLocationUpdate();
+
+        boolean getConnectivityStatus();
+
+        void checkConnectivity();
+
+        void hideDistanceDurationRateTextviewAndProgressbar();
+
+        void processOnLastKnowLocationIsNullView(boolean isInternetConnect, double rate);
+
+        void getDistanceMatrixResponse(String originLatLng, String destinationLatLng, double rate);
     }
 }

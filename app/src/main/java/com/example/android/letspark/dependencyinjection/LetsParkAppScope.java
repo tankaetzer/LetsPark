@@ -11,6 +11,6 @@ import javax.inject.Scope;
  */
 @Scope
 @Retention(RetentionPolicy.CLASS)
-public @interface LetsParkApplicationScope {
+public @interface LetsParkAppScope {
     // Intended to be blank.
 }
