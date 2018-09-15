@@ -72,5 +72,7 @@ public interface EmptyParkingBaysContract {
         void processOnLastKnowLocationIsNullView(boolean isInternetConnect, double rate);
 
         void getDistanceMatrixResponse(String originLatLng, String destinationLatLng, double rate);
+
+        List<EmptyParkingBay> filterEmptyParkingBays(List<EmptyParkingBay> emptyParkingBayList);
     }
 }

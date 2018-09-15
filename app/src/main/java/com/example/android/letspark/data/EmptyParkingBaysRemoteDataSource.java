@@ -46,7 +46,7 @@ public class EmptyParkingBaysRemoteDataSource implements EmptyParkingBaysDataSou
                                     .getValue(EmptyParkingBay.class);
                             emptyParkingBayList.add(new EmptyParkingBay(emptyParkingBay.getLat(),
                                     emptyParkingBay.getLng(), emptyParkingBay.getSnippet(),
-                                    emptyParkingBay.getRate()));
+                                    emptyParkingBay.getRate(), emptyParkingBay.getVacancy()));
                         }
                         callBack.onEmptyParkingBaysLoaded(emptyParkingBayList);
                     }

@@ -21,6 +21,8 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.List;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 
@@ -31,6 +33,8 @@ import static org.mockito.Mockito.verify;
 public class EmptyParkingBaysPresenterTest {
 
     private static List<EmptyParkingBay> emptyParkingBayList;
+
+    private static List<EmptyParkingBay> filterEmptyParkingBayList;
 
     @Mock
     private EmptyParkingBaysContract.View emptyParkingBaysView;
@@ -84,8 +88,13 @@ public class EmptyParkingBaysPresenterTest {
 
         // Add 2 empty parking bays into list.
         emptyParkingBayList = Lists.newArrayList(
-                new EmptyParkingBay(1, 1, "KK3-1", 0.7),
-                new EmptyParkingBay(2, 2, "KK3-2", 0.6));
+                new EmptyParkingBay(1, 1, "KK3-1", 0.7, true),
+                new EmptyParkingBay(2, 2, "KK3-2", 0.6, true));
+
+        // Add 1 empty parking bays into list.
+        filterEmptyParkingBayList = Lists.newArrayList(
+                new EmptyParkingBay(1, 1, "KK3-1", 0.7, false),
+                new EmptyParkingBay(2, 2, "KK3-2", 0.6, true));
     }
 
     @Test
@@ -343,5 +352,11 @@ public class EmptyParkingBaysPresenterTest {
         verify(emptyParkingBaysView).showProgressBar(false);
         verify(emptyParkingBaysView).showDistanceDurationAndRate(false);
         emptyParkingBaysView.showConnectivityAndLocationErrMsg();
+    }
+
+    @Test
+    public void filterEmptyParkingBays_oneOfTwoParkingBaysIsEmpty_returnEmptyParkingBaysSizeIsOne() {
+        List<EmptyParkingBay> temp = emptyParkingBaysPresenter.filterEmptyParkingBays(filterEmptyParkingBayList);
+        assertThat(temp.size(), is(1));
     }
 }

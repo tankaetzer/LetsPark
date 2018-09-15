@@ -168,6 +168,7 @@ public class EmptyParkingBaysFragment extends Fragment implements EmptyParkingBa
 
     @Override
     public void showEmptyParkingBays(final List<EmptyParkingBay> emptyParkingBayList) {
+        getMap().clear();
         for (int index = 0; index < emptyParkingBayList.size(); index++) {
             getMap().addMarker(new MarkerOptions()
                     .position(emptyParkingBayList.get(index).getPosition())
@@ -176,8 +177,7 @@ public class EmptyParkingBaysFragment extends Fragment implements EmptyParkingBa
         }
 
         // TODO: To be delete once search parking bays feature is complete.
-        getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(emptyParkingBayList.get(0).
-                getPosition(), 16));
+        getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(3.721885, 103.120707), 21));
 
         getMap().setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override

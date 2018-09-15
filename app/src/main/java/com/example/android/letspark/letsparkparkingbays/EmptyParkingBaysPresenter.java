@@ -5,6 +5,7 @@ import com.example.android.letspark.data.EmptyParkingBaysDataSource;
 import com.example.android.letspark.service.Service;
 import com.google.android.gms.location.LocationSettingsResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -45,7 +46,8 @@ public class EmptyParkingBaysPresenter implements EmptyParkingBaysContract.Prese
                 LoadEmptyParkingBaysCallBack() {
             @Override
             public void onEmptyParkingBaysLoaded(List<EmptyParkingBay> emptyParkingBayList) {
-                emptyParkingBaysView.showEmptyParkingBays(emptyParkingBayList);
+                List<EmptyParkingBay> temp = filterEmptyParkingBays(emptyParkingBayList);
+                emptyParkingBaysView.showEmptyParkingBays(temp);
             }
 
             @Override
@@ -196,5 +198,16 @@ public class EmptyParkingBaysPresenter implements EmptyParkingBaysContract.Prese
                         emptyParkingBaysView.showDistanceDurationCalculationErrMsg();
                     }
                 });
+    }
+
+    public List<EmptyParkingBay> filterEmptyParkingBays(List<EmptyParkingBay> emptyParkingBayList) {
+        List<EmptyParkingBay> temp = new ArrayList<>();
+        for (int index = 0; index < emptyParkingBayList.size(); index++) {
+            boolean emptyParking = emptyParkingBayList.get(index).getVacancy();
+            if (emptyParking) {
+                temp.add(emptyParkingBayList.get(index));
+            }
+        }
+        return temp;
     }
 }

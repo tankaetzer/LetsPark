@@ -18,16 +18,19 @@ public class EmptyParkingBay implements ClusterItem {
 
     private Double rate;
 
+    private boolean vacancy;
+
     public EmptyParkingBay() {
         // Default constructor required for calls to DataSnapshot.getValue(Post.class).
     }
 
-    public EmptyParkingBay(double lat, double lng, String snippet, Double rate) {
+    public EmptyParkingBay(double lat, double lng, String snippet, Double rate, boolean vacancy) {
         setLat(lat);
         setLng(lng);
         setSnippet(snippet);
         setRate(rate);
         setPosition(new LatLng(lat, lng));
+        setVacancy(vacancy);
     }
 
     //    @Override
@@ -75,5 +78,13 @@ public class EmptyParkingBay implements ClusterItem {
 
     public void setRate(Double rate) {
         this.rate = rate;
+    }
+
+    public boolean getVacancy() {
+        return vacancy;
+    }
+
+    public void setVacancy(boolean vacancy) {
+        this.vacancy = vacancy;
     }
 }
