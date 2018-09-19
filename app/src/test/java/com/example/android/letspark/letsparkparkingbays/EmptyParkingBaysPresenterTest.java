@@ -51,8 +51,6 @@ public class EmptyParkingBaysPresenterTest {
     @Mock
     private ConnectivityService connectivityService;
 
-    private EmptyParkingBaysPresenter emptyParkingBaysPresenter;
-
     @Captor
     private ArgumentCaptor<EmptyParkingBaysDataSource.LoadEmptyParkingBaysCallBack>
             loadEmptyParkingBaysCallBackArgumentCaptor;
@@ -72,6 +70,8 @@ public class EmptyParkingBaysPresenterTest {
     @Captor
     private ArgumentCaptor<Service.DistanceMatrixService.GetDistanceMatrixResponseCallback>
             getDistanceMatrixResponseCallbackArgumentCaptor;
+
+    private EmptyParkingBaysPresenter emptyParkingBaysPresenter;
 
     private Exception e;
 

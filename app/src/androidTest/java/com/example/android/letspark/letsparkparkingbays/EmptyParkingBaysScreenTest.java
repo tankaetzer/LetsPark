@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
  */
 @MediumTest
 @RunWith(AndroidJUnit4.class)
-public class EmptyParkingBaysViewTest {
+public class EmptyParkingBaysScreenTest {
 
     private static final String BASIC_SAMPLE_PACKAGE = "com.example.android.letspark";
 

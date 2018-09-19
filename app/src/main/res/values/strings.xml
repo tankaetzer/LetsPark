@@ -12,9 +12,9 @@
     <string name="permission_location_granted">Location permission has been granted.</string>
     <string name="permission_location_never_show_again">Go to Settings and enable the location permission to maximum utilise Google Map features</string>
     <string name="permission_location_denied">Location permission was denied.</string>
-    <string name="marker_distance_duration_calculation_error">Failed to calculate distance, rate and duration. Please enable Wi-Fi or Mobile data</string>
+    <string name="marker_distance_duration_calculation_error">Failed to calculate distance, rate and duration. Please enable Wi-Fi or Mobile data.</string>
     <string name="marker_getting_location_msg">Getting location. Please make sure location setting is enabled.</string>
-    <string name="marker_enable_connectivity_error">Please enable Wi-Fi or Mobile data</string>
+    <string name="marker_enable_connectivity_error">Please enable Wi-Fi or Mobile data.</string>
     <string name="marker_enable_connectivity_and_location_error">Please enable location and connect to Internet.</string>
     <string name="marker_default_distance_msg">0.0 km</string>
     <string name="marker_default_duration_msg">0 mins</string>
@@ -22,4 +22,5 @@
     <string name="marker_distance_subtitle">Distance</string>
     <string name="marker_estimated_time_subtitle">Estimated Time</string>
     <string name="base_url">https://maps.googleapis.com/maps/api/</string>
+    <string name="authentication_enable_connectivity_error">Please enable Wi-Fi or Mobile data.</string>
 </resources>

@@ -1,9 +1,12 @@
 package com.example.android.letspark.service;
 
+import android.content.Intent;
+
 import com.google.android.gms.location.LocationSettingsResponse;
 
 /**
- * Interface for location service, distance matrix service and connectivity service.
+ * Interface for location service, distance matrix service, connectivity service and
+ * Firebase authentication service.
  */
 public interface Service {
 
@@ -52,6 +55,19 @@ public interface Service {
             void onInternetAvailableReceived();
 
             void onInternetUnavailable();
+        }
+    }
+
+    interface FirebaseAuthenticationService {
+        void getCurrentUserResponse(int resultCode, Intent data,
+                                    GetCurrentUserResponseCallback callback);
+
+        interface GetCurrentUserResponseCallback {
+            void onResultOk(String email);
+
+            void onNoInternet();
+
+            void onClickBackButton();
         }
     }
 }
