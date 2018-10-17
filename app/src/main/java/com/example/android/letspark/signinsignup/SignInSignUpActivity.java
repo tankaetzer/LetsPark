@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.example.android.letspark.LetsParkApp;
 import com.example.android.letspark.R;
+import com.example.android.letspark.data.EmptyParkingBaysRemoteDataSource;
 import com.example.android.letspark.service.ConnectivityService;
 import com.example.android.letspark.service.FirebaseAuthenticationService;
 import com.example.android.letspark.utility.ActivityUtils;
@@ -15,10 +16,16 @@ import javax.inject.Inject;
 public class SignInSignUpActivity extends AppCompatActivity {
 
     public static final int RC_SIGN_IN = 4;
+
     @Inject
     FirebaseAuthenticationService firebaseAuthenticationService;
+
     @Inject
     ConnectivityService connectivityService;
+
+    @Inject
+    EmptyParkingBaysRemoteDataSource emptyParkingBaysRemoteDataSource;
+
     private SignInSignUpFragment signInSignUpFragment;
 
     @Override
@@ -44,7 +51,7 @@ public class SignInSignUpActivity extends AppCompatActivity {
         // TODO: Improve code by injecting dependency using Dagger 2
         // Create the presenter.
         new SignInSignUpPresenter(signInSignUpFragment, firebaseAuthenticationService,
-                connectivityService);
+                connectivityService, emptyParkingBaysRemoteDataSource);
     }
 
     @Override

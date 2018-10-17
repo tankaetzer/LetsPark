@@ -17,11 +17,17 @@ import com.example.android.letspark.utility.ActivityUtils;
 
 import javax.inject.Inject;
 
+import static com.example.android.letspark.addremovecar.AddRemoveCarActivity.REQUEST_ADD_REMOVE_CAR;
+
 public class EmptyParkingBaysActivity extends AppCompatActivity {
 
     public static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     public static final int REQUEST_CHECK_SETTINGS = 2;
+
+    public static String EXTRA_UID = "QWERTYUIOPASDFGHJKLZXCVBNM";
+
+    public static String EXTRA_CAR_NUMBER_PLATE = "WWW1234";
 
     @Inject
     EmptyParkingBaysRemoteDataSource emptyParkingBaysRemoteDataSource;
@@ -48,6 +54,9 @@ public class EmptyParkingBaysActivity extends AppCompatActivity {
         ActionBar ab = getSupportActionBar();
         ab.setTitle("LetsPark");
 
+        // Get the current user uid.
+        String uid = getIntent().getStringExtra(EXTRA_UID);
+
         emptyParkingBaysFragment =
                 (EmptyParkingBaysFragment) getSupportFragmentManager().findFragmentById
                         (R.id.contentFrame);
@@ -65,7 +74,7 @@ public class EmptyParkingBaysActivity extends AppCompatActivity {
 
         // TODO: Improve code by injecting dependency using Dagger 2
         // Create the presenter.
-        new EmptyParkingBaysPresenter(emptyParkingBaysRemoteDataSource,
+        new EmptyParkingBaysPresenter(uid, emptyParkingBaysRemoteDataSource,
                 emptyParkingBaysFragment, locationService, distanceMatrixService,
                 connectivityService);
     }
@@ -73,6 +82,8 @@ public class EmptyParkingBaysActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CHECK_SETTINGS) {
+            emptyParkingBaysFragment.onActivityResult(requestCode, resultCode, data);
+        } else if (requestCode == REQUEST_ADD_REMOVE_CAR) {
             emptyParkingBaysFragment.onActivityResult(requestCode, resultCode, data);
         } else {
             super.onActivityResult(requestCode, resultCode, data);

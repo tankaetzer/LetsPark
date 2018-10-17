@@ -23,4 +23,19 @@
     <string name="marker_estimated_time_subtitle">Estimated Time</string>
     <string name="base_url">https://maps.googleapis.com/maps/api/</string>
     <string name="authentication_enable_connectivity_error">Please enable Wi-Fi or Mobile data.</string>
+    <string name="select_car">Select car</string>
+    <string name="select_duration">Select duration</string>
+    <string name="delete">delete</string>
+    <string name="hint_enter_car_number_late">Enter car number plate</string>
+    <string name="error_enter_car_number_plate">Enter car number plate</string>
+    <string name="msg_no_vehicle_added_yet">No vehicle added yet</string>
+    <string name="msg_saved_car">Saved car</string>
+    <string name="error_car_number_plate_already_linked_with_your_account">Car number plate already linked with your account.</string>
+    <string name="home_radio_one_hour">1 hour</string>
+    <string name="home_radio_two_hours">2 hours</string>
+    <string name="home_radio_thirty_days">30 days</string>
+    <string name="home_dialog_title_select_duration">Select Duration</string>
+    <string name="add_remove_car_timer">timer</string>
+    <string name="add_remove_car_car">TODO</string>
+
 </resources>

@@ -1,5 +1,6 @@
 package com.example.android.letspark.dependencyinjection;
 
+import com.example.android.letspark.addremovecar.AddRemoveCarActivity;
 import com.example.android.letspark.data.EmptyParkingBaysRemoteDataSourceModule;
 import com.example.android.letspark.letsparkparkingbays.EmptyParkingBaysActivity;
 import com.example.android.letspark.service.ConnectivityServiceModule;
@@ -22,4 +23,6 @@ public interface LetsParkAppComponent {
     void inject(EmptyParkingBaysActivity emptyParkingBaysActivity);
 
     void inject(SignInSignUpActivity signInSignUpActivity);
+
+    void inject(AddRemoveCarActivity addRemoveCarActivity);
 }

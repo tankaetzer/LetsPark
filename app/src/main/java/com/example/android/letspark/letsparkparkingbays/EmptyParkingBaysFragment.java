@@ -1,6 +1,8 @@
 package com.example.android.letspark.letsparkparkingbays;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -16,9 +18,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.example.android.letspark.R;
+import com.example.android.letspark.addremovecar.AddRemoveCarActivity;
 import com.example.android.letspark.data.EmptyParkingBay;
 import com.example.android.letspark.utility.NumberUtils;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -33,6 +37,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
 
+import static com.example.android.letspark.addremovecar.AddRemoveCarActivity.REQUEST_ADD_REMOVE_CAR;
+import static com.example.android.letspark.letsparkparkingbays.EmptyParkingBaysActivity.EXTRA_CAR_NUMBER_PLATE;
 import static com.example.android.letspark.letsparkparkingbays.EmptyParkingBaysActivity.LOCATION_PERMISSION_REQUEST_CODE;
 import static com.example.android.letspark.letsparkparkingbays.EmptyParkingBaysActivity.REQUEST_CHECK_SETTINGS;
 
@@ -55,9 +61,21 @@ public class EmptyParkingBaysFragment extends Fragment implements EmptyParkingBa
 
     private TextView text_rate;
 
+    private TextView text_select_car;
+
+    private TextView text_select_duration;
+
     private ProgressBar progressBar;
 
     private View constraintLayout_distance_price_duration;
+
+    private String carNumberPlate;
+
+    private RadioButton radio_one_hour;
+
+    private RadioButton radio_two_hours;
+
+    private RadioButton radio_thirty_days;
 
     public EmptyParkingBaysFragment() {
         // Require empty constructor so it can be instantiated when restoring Activity's state.
@@ -91,11 +109,11 @@ public class EmptyParkingBaysFragment extends Fragment implements EmptyParkingBa
             });
         }
         // R.id.map is a FrameLayout, not a Fragment.
-        getChildFragmentManager().beginTransaction().replace(R.id.map, mapFragment).commit();
+        getFragmentManager().beginTransaction().replace(R.id.map, mapFragment).commit();
 
-        // Set up TextView for distance, duration and rate.
-        // Set up constraintLayoutDistancePriceDuration for grouping all tvDistance, tvDuration,
-        // tvDuration.
+        // Set up TextView for  distance, duration and rate.
+        // Set up constraintLayoutDistancePriceDuration for grouping all text_distance, text_duration,
+        // text_rate.
         text_distance = root.findViewById(R.id.text_distance);
         text_duration = root.findViewById(R.id.text_duration);
         text_rate = root.findViewById(R.id.text_rate);
@@ -112,6 +130,24 @@ public class EmptyParkingBaysFragment extends Fragment implements EmptyParkingBa
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+            }
+        });
+
+        // Set up TextView for select car and select duration.
+        text_select_car = root.findViewById(R.id.text_select_car);
+        text_select_duration = root.findViewById(R.id.text_select_duration);
+
+        text_select_car.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                emptyParkingBaysPresenter.selectCar();
+            }
+        });
+
+        text_select_duration.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                emptyParkingBaysPresenter.selectDuration();
             }
         });
 
@@ -138,10 +174,12 @@ public class EmptyParkingBaysFragment extends Fragment implements EmptyParkingBa
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CHECK_SETTINGS) {
-            emptyParkingBaysPresenter.askLocationPermission(checkSelfPermission(),
-                    shouldShowRequestPermissionRationale());
+        if (requestCode == REQUEST_ADD_REMOVE_CAR) {
+            if (data != null) {
+                carNumberPlate = data.getStringExtra(EXTRA_CAR_NUMBER_PLATE);
+            }
         }
+        emptyParkingBaysPresenter.result(requestCode, resultCode);
     }
 
     /**
@@ -336,6 +374,60 @@ public class EmptyParkingBaysFragment extends Fragment implements EmptyParkingBa
         text_duration.setText(getString(R.string.marker_default_duration_msg));
         String stringRate = NumberUtils.formatAndDisplayMalaysiaCurrency(rate);
         text_rate.setText(stringRate);
+    }
+
+    @Override
+    public void showAddRemoveCarUi(String uid) {
+        Intent intent = new Intent(getContext(), AddRemoveCarActivity.class);
+        intent.putExtra(AddRemoveCarActivity.EXTRA_UID, uid);
+        startActivityForResult(intent, REQUEST_ADD_REMOVE_CAR);
+    }
+
+    @Override
+    public void showSelectedCar() {
+        text_select_car.setText(carNumberPlate);
+        text_select_car.setTextColor(getResources().getColor(R.color.colorPrimary));
+    }
+
+    @Override
+    public void showDurationOptionDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        // Get the layout inflater
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+
+        // Inflate and set the layout for the dialog.
+        // Pass null as the parent view because its going in the dialog layout.
+        View dialogView = inflater.inflate(R.layout.dialog_select_duration, null);
+
+        radio_one_hour = dialogView.findViewById(R.id.radio_one_hour);
+        radio_two_hours = dialogView.findViewById(R.id.radio_two_hours);
+        radio_thirty_days = dialogView.findViewById(R.id.radio_thirty_days);
+
+        builder.setView(dialogView)
+                // Add action buttons
+                .setTitle(getString(R.string.home_dialog_title_select_duration))
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (radio_one_hour.isChecked()) {
+                            text_select_duration.setText(R.string.home_radio_one_hour);
+                        } else if (radio_two_hours.isChecked()) {
+                            text_select_duration.setText(R.string.home_radio_two_hours);
+                        } else if (radio_thirty_days.isChecked()) {
+                            text_select_duration.setText(R.string.home_radio_thirty_days);
+                        }
+                        text_select_duration.setTextColor(getResources().getColor(R.color.colorPrimary));
+                    }
+                })
+                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .create();
+
+        builder.show();
     }
 
     private void showMessage(String message) {

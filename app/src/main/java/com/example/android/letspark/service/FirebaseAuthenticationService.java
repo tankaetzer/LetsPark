@@ -13,6 +13,10 @@ import static android.app.Activity.RESULT_OK;
  */
 public class FirebaseAuthenticationService implements Service.FirebaseAuthenticationService {
 
+    private String email;
+
+    private String uid;
+
     @Override
     public void getCurrentUserResponse(int resultCode, Intent data,
                                        GetCurrentUserResponseCallback callback) {
@@ -21,8 +25,9 @@ public class FirebaseAuthenticationService implements Service.FirebaseAuthentica
         if (resultCode == RESULT_OK) {
             // Successfully signed in.
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            String email = user.getEmail();
-            callback.onResultOk(email);
+            email = user.getEmail();
+            uid = user.getUid();
+            callback.onResultOk(email, uid);
         } else {
             // Sign in failed due to no internet connection.
             if (response != null && response.getError().getMessage()

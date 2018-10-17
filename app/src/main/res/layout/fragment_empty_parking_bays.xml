@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:visibility="visible">
 
     <FrameLayout
         android:id="@+id/map"
@@ -22,22 +23,90 @@
         app:layout_constraintTop_toTopOf="@+id/map" />
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressBar">
+
+        <TextView
+            android:id="@+id/text_select_car"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:height="@dimen/list_vertical_spacing"
+            android:background="@color/colorWhite"
+            android:paddingStart="56dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="0dp"
+            android:paddingBottom="16dp"
+            android:text="@string/select_car"
+            android:textColor="?android:textColorHint"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/text_select_duration"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/colorWhite"
+            android:paddingStart="56dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="0dp"
+            android:paddingBottom="16dp"
+            android:text="@string/select_duration"
+            android:textColor="?android:textColorHint"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_select_car" />
+
+        <ImageView
+            android:id="@+id/image_timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="13dp"
+            android:contentDescription="@string/add_remove_car_timer"
+            app:layout_constraintStart_toStartOf="@+id/text_select_duration"
+            app:layout_constraintTop_toTopOf="@+id/text_select_duration"
+            app:srcCompat="@drawable/ic_timer_black" />
+
+        <ImageView
+            android:id="@+id/image_car"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="13dp"
+            android:contentDescription="@string/add_remove_car_car"
+            app:layout_constraintStart_toStartOf="@+id/text_select_car"
+            app:layout_constraintTop_toTopOf="@+id/text_select_car"
+            app:srcCompat="@drawable/ic_car_black" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
         android:id="@+id/constraintLayout_distance_price_duration"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/map">
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
 
         <TextView
             android:id="@+id/text_distance"
             android:layout_width="0dp"
-            android:layout_height="88dp"
-            android:background="@color/colorPrimary"
-            android:gravity="center_vertical"
+            android:layout_height="56dp"
+            android:background="@color/colorWhite"
+            android:paddingTop="8dp"
             android:textAlignment="center"
-            android:textColor="@color/colorWhite"
+            android:textColor="@color/colorPrimary"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/text_rate"
             app:layout_constraintHorizontal_bias="0.5"
@@ -48,11 +117,11 @@
         <TextView
             android:id="@+id/text_rate"
             android:layout_width="0dp"
-            android:layout_height="88dp"
-            android:background="@color/colorPrimary"
-            android:gravity="center_vertical"
+            android:layout_height="56dp"
+            android:background="@color/colorWhite"
+            android:paddingTop="8dp"
             android:textAlignment="center"
-            android:textColor="@color/colorWhite"
+            android:textColor="@color/colorPrimary"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/text_duration"
             app:layout_constraintHorizontal_bias="0.5"
@@ -63,11 +132,11 @@
         <TextView
             android:id="@+id/text_duration"
             android:layout_width="0dp"
-            android:layout_height="88dp"
-            android:background="@color/colorPrimary"
-            android:gravity="center_vertical"
+            android:layout_height="56dp"
+            android:background="@color/colorWhite"
+            android:paddingTop="8dp"
             android:textAlignment="center"
-            android:textColor="@color/colorWhite"
+            android:textColor="@color/colorPrimary"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -79,11 +148,11 @@
             android:id="@+id/text_distance_subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="12dp"
             android:text="@string/marker_distance_subtitle"
-            android:textColor="@color/colorWhite"
+            android:textColor="@color/colorPrimary"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="@+id/text_distance"
             app:layout_constraintEnd_toStartOf="@+id/text_rate"
@@ -93,11 +162,11 @@
             android:id="@+id/text_rate_subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="12dp"
             android:text="@string/marker_per_hour_subtitle"
-            android:textColor="@color/colorWhite"
+            android:textColor="@color/colorPrimary"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="@+id/text_rate"
             app:layout_constraintEnd_toStartOf="@+id/text_duration"
@@ -107,9 +176,9 @@
             android:id="@+id/text_duration_subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="12dp"
             android:text="@string/marker_estimated_time_subtitle"
-            android:textColor="@color/colorWhite"
+            android:textColor="@color/colorPrimary"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="@+id/text_duration"
             app:layout_constraintEnd_toEndOf="@+id/text_duration"

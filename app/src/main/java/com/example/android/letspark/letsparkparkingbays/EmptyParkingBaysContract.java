@@ -46,6 +46,12 @@ public interface EmptyParkingBaysContract {
         void showConnectivityErrMsg();
 
         void setRateAndDefaultDistanceDuration(double rate);
+
+        void showAddRemoveCarUi(String uid);
+
+        void showSelectedCar();
+
+        void showDurationOptionDialog();
     }
 
     interface Presenter extends BasePresenter {
@@ -74,5 +80,11 @@ public interface EmptyParkingBaysContract {
         void getDistanceMatrixResponse(String originLatLng, String destinationLatLng, double rate);
 
         List<EmptyParkingBay> filterEmptyParkingBays(List<EmptyParkingBay> emptyParkingBayList);
+
+        void selectCar();
+
+        void result(int requestCode, int resultCode);
+
+        void selectDuration();
     }
 }

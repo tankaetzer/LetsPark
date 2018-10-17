@@ -73,9 +73,12 @@ public class EmptyParkingBaysPresenterTest {
 
     private EmptyParkingBaysPresenter emptyParkingBaysPresenter;
 
-    private Exception e;
 
     private double rate = 0.80;
+
+    private String uid = "xxxxxxx";
+
+    private Exception e;
 
     @Before
     public void setup() {
@@ -83,7 +86,7 @@ public class EmptyParkingBaysPresenterTest {
         MockitoAnnotations.initMocks(this);
 
         // Get a reference to the class under test.
-        emptyParkingBaysPresenter = new EmptyParkingBaysPresenter(emptyParkingBaysRemoteDataSource,
+        emptyParkingBaysPresenter = new EmptyParkingBaysPresenter(uid, emptyParkingBaysRemoteDataSource,
                 emptyParkingBaysView, locationService, distanceMatrixService, connectivityService);
 
         // Add 2 empty parking bays into list.
@@ -100,7 +103,7 @@ public class EmptyParkingBaysPresenterTest {
     @Test
     public void createPresenter_setsThePresenterToView() {
         // Get a reference to the class under test.
-        emptyParkingBaysPresenter = new EmptyParkingBaysPresenter(emptyParkingBaysRemoteDataSource,
+        emptyParkingBaysPresenter = new EmptyParkingBaysPresenter(uid, emptyParkingBaysRemoteDataSource,
                 emptyParkingBaysView, locationService, distanceMatrixService, connectivityService);
 
         // Then the presenter is set to the view.

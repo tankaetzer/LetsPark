@@ -17,7 +17,7 @@ public interface SignInSignUpContract {
 
         void closeActivity();
 
-        void showEmptyParkingBaysUi();
+        void showEmptyParkingBaysUi(String uid);
     }
 
     interface Presenter extends BasePresenter {

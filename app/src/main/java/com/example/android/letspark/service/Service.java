@@ -63,7 +63,7 @@ public interface Service {
                                     GetCurrentUserResponseCallback callback);
 
         interface GetCurrentUserResponseCallback {
-            void onResultOk(String email);
+            void onResultOk(String email, String uid);
 
             void onNoInternet();
 

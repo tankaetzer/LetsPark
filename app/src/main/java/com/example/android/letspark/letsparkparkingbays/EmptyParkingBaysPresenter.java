@@ -8,6 +8,9 @@ import com.google.android.gms.location.LocationSettingsResponse;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.app.Activity.RESULT_OK;
+import static com.example.android.letspark.addremovecar.AddRemoveCarActivity.REQUEST_ADD_REMOVE_CAR;
+import static com.example.android.letspark.letsparkparkingbays.EmptyParkingBaysActivity.REQUEST_CHECK_SETTINGS;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -26,11 +29,15 @@ public class EmptyParkingBaysPresenter implements EmptyParkingBaysContract.Prese
 
     private Service.ConnectivityService connectivityService;
 
-    public EmptyParkingBaysPresenter(EmptyParkingBaysDataSource emptyParkingBaysRemoteEmptyParkingBaysDataSource,
+    private String uid;
+
+    public EmptyParkingBaysPresenter(String uid,
+                                     EmptyParkingBaysDataSource emptyParkingBaysRemoteEmptyParkingBaysDataSource,
                                      EmptyParkingBaysContract.View emptyParkingBaysView,
                                      Service.LocationService locationService,
                                      Service.DistanceMatrixService distanceMatrixService,
                                      Service.ConnectivityService connectivityService) {
+        this.uid = uid;
         this.emptyParkingBaysRemoteEmptyParkingBaysDataSource = checkNotNull(emptyParkingBaysRemoteEmptyParkingBaysDataSource);
         this.emptyParkingBaysView = checkNotNull(emptyParkingBaysView);
         this.locationService = checkNotNull(locationService);
@@ -200,6 +207,7 @@ public class EmptyParkingBaysPresenter implements EmptyParkingBaysContract.Prese
                 });
     }
 
+    @Override
     public List<EmptyParkingBay> filterEmptyParkingBays(List<EmptyParkingBay> emptyParkingBayList) {
         List<EmptyParkingBay> temp = new ArrayList<>();
         for (int index = 0; index < emptyParkingBayList.size(); index++) {
@@ -209,5 +217,25 @@ public class EmptyParkingBaysPresenter implements EmptyParkingBaysContract.Prese
             }
         }
         return temp;
+    }
+
+    @Override
+    public void selectCar() {
+        emptyParkingBaysView.showAddRemoveCarUi(uid);
+    }
+
+    @Override
+    public void result(int requestCode, int resultCode) {
+        if (requestCode == REQUEST_CHECK_SETTINGS && resultCode == RESULT_OK) {
+            askLocationPermission(emptyParkingBaysView.checkSelfPermission(),
+                    emptyParkingBaysView.shouldShowRequestPermissionRationale());
+        } else if (requestCode == REQUEST_ADD_REMOVE_CAR && resultCode == RESULT_OK) {
+            emptyParkingBaysView.showSelectedCar();
+        }
+    }
+
+    @Override
+    public void selectDuration() {
+        emptyParkingBaysView.showDurationOptionDialog();
     }
 }

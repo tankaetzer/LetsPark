@@ -2,6 +2,7 @@ package com.example.android.letspark.signinsignup;
 
 import android.test.suitebuilder.annotation.SmallTest;
 
+import com.example.android.letspark.data.EmptyParkingBaysRemoteDataSource;
 import com.example.android.letspark.service.ConnectivityService;
 import com.example.android.letspark.service.FirebaseAuthenticationService;
 import com.example.android.letspark.service.Service;
@@ -19,13 +20,16 @@ import static org.mockito.Mockito.verify;
 public class SignInSignUpTest {
 
     @Mock
-    ConnectivityService connectivityService;
+    private ConnectivityService connectivityService;
 
     @Mock
-    SignInSignUpContract.View signInSignUpView;
+    private SignInSignUpContract.View signInSignUpView;
 
     @Mock
-    FirebaseAuthenticationService firebaseAuthenticationService;
+    private FirebaseAuthenticationService firebaseAuthenticationService;
+
+    @Mock
+    private EmptyParkingBaysRemoteDataSource emptyParkingBaysRemoteDataSource;
 
     @Captor
     private ArgumentCaptor<Service.ConnectivityService.GetConnectivityStatusResponseCallback>
@@ -39,14 +43,14 @@ public class SignInSignUpTest {
         MockitoAnnotations.initMocks(this);
 
         signInSignUpPresenter = new SignInSignUpPresenter(signInSignUpView,
-                firebaseAuthenticationService, connectivityService);
+                firebaseAuthenticationService, connectivityService, emptyParkingBaysRemoteDataSource);
     }
 
     @Test
     public void createPresenter_setsThePresenterToView() {
         // Get a reference to the class under test.
         signInSignUpPresenter = new SignInSignUpPresenter(signInSignUpView,
-                firebaseAuthenticationService, connectivityService);
+                firebaseAuthenticationService, connectivityService, emptyParkingBaysRemoteDataSource);
 
         // Then the presenter is set to the view.
         verify(signInSignUpView).setPresenter(signInSignUpPresenter);

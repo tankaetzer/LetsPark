@@ -34,9 +34,9 @@ public class SignInSignUpScreenTest {
 
     private static final int LAUNCH_TIMEOUT = 5000;
 
-    private final static String EMAIL = "tkttan@hotmail.com";
-
-    private final static String PASSWORD = "qwerty";
+//    private final static String EMAIL = "tkttan@hotmail.com";
+//
+//    private final static String PASSWORD = "qwerty";
 
     @Rule
     public ActivityTestRule<SignInSignUpActivity> signInSignUpActivityTestRule =

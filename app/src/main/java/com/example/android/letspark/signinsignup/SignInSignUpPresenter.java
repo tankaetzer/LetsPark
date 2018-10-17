@@ -2,6 +2,7 @@ package com.example.android.letspark.signinsignup;
 
 import android.content.Intent;
 
+import com.example.android.letspark.data.EmptyParkingBaysDataSource;
 import com.example.android.letspark.service.Service;
 
 import static com.example.android.letspark.signinsignup.SignInSignUpActivity.RC_SIGN_IN;
@@ -15,12 +16,16 @@ public class SignInSignUpPresenter implements SignInSignUpContract.Presenter {
 
     private Service.ConnectivityService connectivityService;
 
+    private EmptyParkingBaysDataSource emptyParkingBaysDataSource;
+
     public SignInSignUpPresenter(SignInSignUpContract.View signInSignUpView,
                                  Service.FirebaseAuthenticationService firebaseAuthenticationService,
-                                 Service.ConnectivityService connectivityService) {
+                                 Service.ConnectivityService connectivityService,
+                                 EmptyParkingBaysDataSource emptyParkingBaysDataSource) {
         this.signInSignUpView = checkNotNull(signInSignUpView);
         this.firebaseAuthenticationService = checkNotNull(firebaseAuthenticationService);
         this.connectivityService = checkNotNull(connectivityService);
+        this.emptyParkingBaysDataSource = checkNotNull(emptyParkingBaysDataSource);
         signInSignUpView.setPresenter(this);
     }
 
@@ -35,9 +40,10 @@ public class SignInSignUpPresenter implements SignInSignUpContract.Presenter {
             firebaseAuthenticationService.getCurrentUserResponse(resultCode, data,
                     new Service.FirebaseAuthenticationService.GetCurrentUserResponseCallback() {
                         @Override
-                        public void onResultOk(String email) {
+                        public void onResultOk(String email, String uid) {
                             // TODO: Complete the test using Espresso Idling Resource
-                            signInSignUpView.showEmptyParkingBaysUi();
+                            signInSignUpView.showEmptyParkingBaysUi(uid);
+                            emptyParkingBaysDataSource.writeNewUser(uid, email);
                         }
 
                         @Override

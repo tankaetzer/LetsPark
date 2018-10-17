@@ -42,8 +42,6 @@ public class LocationServiceTest {
 
     private LocationService locationService;
 
-    private LocationCallback locationCallback;
-
     @Before
     public void setup() {
         locationRequest = new LocationRequest()
@@ -61,7 +59,7 @@ public class LocationServiceTest {
 
         task = settingsClient.checkLocationSettings(builder.build());
 
-        this.locationCallback = new LocationCallback() {
+        new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 // Intended to be blank.

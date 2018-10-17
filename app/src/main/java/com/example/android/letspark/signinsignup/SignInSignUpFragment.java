@@ -91,8 +91,9 @@ public class SignInSignUpFragment extends Fragment implements SignInSignUpContra
     }
 
     @Override
-    public void showEmptyParkingBaysUi() {
+    public void showEmptyParkingBaysUi(String uid) {
         Intent intent = new Intent(getContext(), EmptyParkingBaysActivity.class);
+        intent.putExtra(EmptyParkingBaysActivity.EXTRA_UID, uid);
         startActivity(intent);
     }
 }

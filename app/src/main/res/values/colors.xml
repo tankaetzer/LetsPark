@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#303F9F</color>
     <color name="colorWhite">#FFFFFF</color>
+    <drawable name="touchFeedback">#CFD8DC</drawable>
 </resources>
