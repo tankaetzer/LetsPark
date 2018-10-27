@@ -177,6 +177,9 @@ public class EmptyParkingBaysFragment extends Fragment implements EmptyParkingBa
         if (requestCode == REQUEST_ADD_REMOVE_CAR) {
             if (data != null) {
                 carNumberPlate = data.getStringExtra(EXTRA_CAR_NUMBER_PLATE);
+            } else {
+                text_select_car.setText(R.string.home_select_car);
+                text_select_car.setTextColor(getResources().getColor(R.color.colorHint));
             }
         }
         emptyParkingBaysPresenter.result(requestCode, resultCode);

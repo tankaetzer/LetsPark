@@ -100,10 +100,10 @@ public class AddRemoveCarPresenter implements AddRemoveCarContract.Presenter {
     public void processAndShowCars(List<Car> carList) {
         if (carList.size() > 0) {
             addRemoveCarView.showNoCarsView(false);
-            addRemoveCarView.showCarsAfterAddingOrRemoving(carList);
         } else {
             addRemoveCarView.showNoCarsView(true);
         }
+        addRemoveCarView.showCarsAfterAddingOrRemoving(carList);
     }
 
     @Override
