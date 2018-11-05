@@ -1,4 +1,4 @@
-package com.example.android.letspark.letsparkparkingbays;
+package com.example.android.letspark.home;
 
 import android.content.Context;
 import android.content.Intent;
@@ -28,15 +28,15 @@ import static org.junit.Assert.assertEquals;
  */
 @MediumTest
 @RunWith(AndroidJUnit4.class)
-public class EmptyParkingBaysScreenTest {
+public class HomeScreenTest {
 
     private static final String BASIC_SAMPLE_PACKAGE = "com.example.android.letspark";
 
     private static final int LAUNCH_TIMEOUT = 5000;
 
     @Rule
-    public ActivityTestRule<EmptyParkingBaysActivity> activityRule
-            = new ActivityTestRule<>(EmptyParkingBaysActivity.class);
+    public ActivityTestRule<HomeActivity> activityRule
+            = new ActivityTestRule<>(HomeActivity.class);
 
     private UiDevice device;
 

@@ -1,4 +1,4 @@
-package com.example.android.letspark.data;
+package com.example.android.letspark.data.model;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;

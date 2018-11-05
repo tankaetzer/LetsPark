@@ -1,8 +1,8 @@
-package com.example.android.letspark.letsparkparkingbays;
+package com.example.android.letspark.home;
 
 import com.example.android.letspark.BasePresenter;
 import com.example.android.letspark.BaseView;
-import com.example.android.letspark.data.EmptyParkingBay;
+import com.example.android.letspark.data.model.EmptyParkingBay;
 import com.google.android.gms.maps.GoogleMap;
 
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * This specifies the contract between the view and the presenter.
  */
-public interface EmptyParkingBaysContract {
+public interface HomeContract {
 
     interface View extends BaseView<Presenter> {
         void showEmptyParkingBays(List<EmptyParkingBay> emptyParkingBayList);

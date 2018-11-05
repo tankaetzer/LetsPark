@@ -1,4 +1,4 @@
-package com.example.android.letspark.letsparkparkingbays;
+package com.example.android.letspark.home;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,7 +9,7 @@ import android.support.v7.widget.Toolbar;
 
 import com.example.android.letspark.LetsParkApp;
 import com.example.android.letspark.R;
-import com.example.android.letspark.data.EmptyParkingBaysRemoteDataSource;
+import com.example.android.letspark.data.RemoteDataSource;
 import com.example.android.letspark.service.ConnectivityService;
 import com.example.android.letspark.service.DistanceMatrixService;
 import com.example.android.letspark.service.LocationService;
@@ -19,7 +19,7 @@ import javax.inject.Inject;
 
 import static com.example.android.letspark.addremovecar.AddRemoveCarActivity.REQUEST_ADD_REMOVE_CAR;
 
-public class EmptyParkingBaysActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity {
 
     public static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
@@ -30,7 +30,7 @@ public class EmptyParkingBaysActivity extends AppCompatActivity {
     public static String EXTRA_CAR_NUMBER_PLATE = "WWW1234";
 
     @Inject
-    EmptyParkingBaysRemoteDataSource emptyParkingBaysRemoteDataSource;
+    RemoteDataSource remoteDataSource;
 
     @Inject
     LocationService locationService;
@@ -41,12 +41,12 @@ public class EmptyParkingBaysActivity extends AppCompatActivity {
     @Inject
     ConnectivityService connectivityService;
 
-    private EmptyParkingBaysFragment emptyParkingBaysFragment;
+    private HomeFragment homeFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_empty_parking_bays);
+        setContentView(R.layout.activity_home);
 
         // Set up the toolbar.
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -57,14 +57,14 @@ public class EmptyParkingBaysActivity extends AppCompatActivity {
         // Get the current user uid.
         String uid = getIntent().getStringExtra(EXTRA_UID);
 
-        emptyParkingBaysFragment =
-                (EmptyParkingBaysFragment) getSupportFragmentManager().findFragmentById
+        homeFragment =
+                (HomeFragment) getSupportFragmentManager().findFragmentById
                         (R.id.contentFrame);
-        if (emptyParkingBaysFragment == null) {
+        if (homeFragment == null) {
             // Create the fragment.
-            emptyParkingBaysFragment = EmptyParkingBaysFragment.newInstance();
+            homeFragment = HomeFragment.newInstance();
             ActivityUtils.addFragmentToActivity(
-                    getSupportFragmentManager(), emptyParkingBaysFragment, R.id.contentFrame);
+                    getSupportFragmentManager(), homeFragment, R.id.contentFrame);
         }
 
         // Get the instance of LetsParkAppComponent to connect between our dependency provider
@@ -74,17 +74,17 @@ public class EmptyParkingBaysActivity extends AppCompatActivity {
 
         // TODO: Improve code by injecting dependency using Dagger 2
         // Create the presenter.
-        new EmptyParkingBaysPresenter(uid, emptyParkingBaysRemoteDataSource,
-                emptyParkingBaysFragment, locationService, distanceMatrixService,
+        new HomePresenter(uid, remoteDataSource,
+                homeFragment, locationService, distanceMatrixService,
                 connectivityService);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CHECK_SETTINGS) {
-            emptyParkingBaysFragment.onActivityResult(requestCode, resultCode, data);
+            homeFragment.onActivityResult(requestCode, resultCode, data);
         } else if (requestCode == REQUEST_ADD_REMOVE_CAR) {
-            emptyParkingBaysFragment.onActivityResult(requestCode, resultCode, data);
+            homeFragment.onActivityResult(requestCode, resultCode, data);
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -94,7 +94,7 @@ public class EmptyParkingBaysActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            emptyParkingBaysFragment.onRequestPermissionsResult(requestCode, permissions,
+            homeFragment.onRequestPermissionsResult(requestCode, permissions,
                     grantResults);
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);

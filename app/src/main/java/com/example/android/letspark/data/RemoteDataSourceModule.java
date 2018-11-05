@@ -9,11 +9,11 @@ import dagger.Provides;
 
 
 /**
- * This is a Dagger module. We use this to pass in the EmptyParkingBaysRemoteDataSource dependency
+ * This is a Dagger module. We use this to pass in the RemoteDataSource dependency
  * to the presenter.
  */
 @Module
-public class EmptyParkingBaysRemoteDataSourceModule {
+public class RemoteDataSourceModule {
 
     @Provides
     @LetsParkAppScope

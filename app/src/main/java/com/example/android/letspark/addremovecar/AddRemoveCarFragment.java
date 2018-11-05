@@ -21,8 +21,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.android.letspark.R;
-import com.example.android.letspark.data.Car;
-import com.example.android.letspark.letsparkparkingbays.EmptyParkingBaysActivity;
+import com.example.android.letspark.data.model.Car;
+import com.example.android.letspark.home.HomeActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -118,7 +118,7 @@ public class AddRemoveCarFragment extends Fragment implements AddRemoveCarContra
 
         builder.setView(dialogView)
                 // Add action buttons
-                .setTitle("Add Vehicle")
+                .setTitle("Add Car")
                 .setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -166,7 +166,7 @@ public class AddRemoveCarFragment extends Fragment implements AddRemoveCarContra
 
     @Override
     public void showSuccessfullyDeletedCarMsg() {
-        showMessage("Deleted car");
+        showMessage(getString(R.string.msg_deleted_car));
     }
 
     @Override
@@ -181,7 +181,7 @@ public class AddRemoveCarFragment extends Fragment implements AddRemoveCarContra
     @Override
     public void showEmptyParkingBaysUi(String carNumberPlate) {
         Intent intent = new Intent();
-        intent.putExtra(EmptyParkingBaysActivity.EXTRA_CAR_NUMBER_PLATE, carNumberPlate);
+        intent.putExtra(HomeActivity.EXTRA_CAR_NUMBER_PLATE, carNumberPlate);
         getActivity().setResult(Activity.RESULT_OK, intent);
         getActivity().finish();
     }

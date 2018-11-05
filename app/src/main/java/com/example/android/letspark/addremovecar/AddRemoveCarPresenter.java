@@ -1,8 +1,8 @@
 package com.example.android.letspark.addremovecar;
 
-import com.example.android.letspark.data.Car;
-import com.example.android.letspark.data.EmptyParkingBaysDataSource;
-import com.example.android.letspark.data.EmptyParkingBaysRemoteDataSource;
+import com.example.android.letspark.data.model.Car;
+import com.example.android.letspark.data.DataSource;
+import com.example.android.letspark.data.RemoteDataSource;
 
 import java.util.List;
 
@@ -12,15 +12,15 @@ public class AddRemoveCarPresenter implements AddRemoveCarContract.Presenter {
 
     private AddRemoveCarContract.View addRemoveCarView;
 
-    private EmptyParkingBaysRemoteDataSource emptyParkingBaysRemoteDataSource;
+    private RemoteDataSource remoteDataSource;
 
     private String uid;
 
     public AddRemoveCarPresenter(String uid, AddRemoveCarContract.View addRemoveCarView,
-                                 EmptyParkingBaysRemoteDataSource emptyParkingBaysRemoteDataSource) {
+                                 RemoteDataSource remoteDataSource) {
         this.uid = uid;
         this.addRemoveCarView = checkNotNull(addRemoveCarView);
-        this.emptyParkingBaysRemoteDataSource = checkNotNull(emptyParkingBaysRemoteDataSource);
+        this.remoteDataSource = checkNotNull(remoteDataSource);
         addRemoveCarView.setPresenter(this);
     }
 
@@ -37,9 +37,9 @@ public class AddRemoveCarPresenter implements AddRemoveCarContract.Presenter {
             addRemoveCarView.showCarExistErrMsg();
         } else {
             addRemoveCarView.showProgressBar(true);
-            emptyParkingBaysRemoteDataSource.writeCarNumberPlate(
+            remoteDataSource.writeCarNumberPlate(
                     carNumberPlate.toUpperCase(), uid,
-                    new EmptyParkingBaysDataSource.LoadUserCarsCallBack() {
+                    new DataSource.LoadUserCarsCallBack() {
                         @Override
                         public void onUserCarsLoaded(List<Car> carList) {
                             addRemoveCarView.showProgressBar(false);
@@ -60,8 +60,8 @@ public class AddRemoveCarPresenter implements AddRemoveCarContract.Presenter {
     @Override
     public void loadUserCars() {
         addRemoveCarView.showProgressBar(true);
-        emptyParkingBaysRemoteDataSource.getUserCars(uid,
-                new EmptyParkingBaysDataSource.LoadUserCarsCallBack() {
+        remoteDataSource.getUserCars(uid,
+                new DataSource.LoadUserCarsCallBack() {
                     @Override
                     public void onUserCarsLoaded(List<Car> carList) {
                         addRemoveCarView.showProgressBar(false);
@@ -79,8 +79,8 @@ public class AddRemoveCarPresenter implements AddRemoveCarContract.Presenter {
     @Override
     public void removeCar(Car currentCar) {
         addRemoveCarView.showProgressBar(true);
-        emptyParkingBaysRemoteDataSource.deleteCar(uid, currentCar.getKey(),
-                new EmptyParkingBaysDataSource.LoadUserCarsCallBack() {
+        remoteDataSource.deleteCar(uid, currentCar.getKey(),
+                new DataSource.LoadUserCarsCallBack() {
                     @Override
                     public void onUserCarsLoaded(List<Car> carList) {
                         addRemoveCarView.showProgressBar(false);

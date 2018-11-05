@@ -65,7 +65,7 @@ public class LocationService implements Service.LocationService {
 
     /**
      * Annotation @Suppresslint is used since location permission has been checked explicitly
-     * using method askLocationPermission in EmptyParkingBaysPresenter.
+     * using method askLocationPermission in HomePresenter.
      */
     @SuppressLint("MissingPermission")
     @Override
@@ -103,7 +103,7 @@ public class LocationService implements Service.LocationService {
 
     /**
      * Annotation @Suppresslint is used since location permission has been checked explicitly
-     * using method askLocationPermission in EmptyParkingBaysPresenter.
+     * using method askLocationPermission in HomePresenter.
      * <p>
      * This method start location update.
      */

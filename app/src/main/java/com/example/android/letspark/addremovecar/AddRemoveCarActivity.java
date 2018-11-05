@@ -7,7 +7,7 @@ import android.support.v7.widget.Toolbar;
 
 import com.example.android.letspark.LetsParkApp;
 import com.example.android.letspark.R;
-import com.example.android.letspark.data.EmptyParkingBaysRemoteDataSource;
+import com.example.android.letspark.data.RemoteDataSource;
 import com.example.android.letspark.utility.ActivityUtils;
 
 import javax.inject.Inject;
@@ -19,7 +19,7 @@ public class AddRemoveCarActivity extends AppCompatActivity {
     public static String EXTRA_UID = "QWERTYUIOPASDFGHJKLZXCVBNM";
 
     @Inject
-    EmptyParkingBaysRemoteDataSource emptyParkingBaysRemoteDataSource;
+    RemoteDataSource remoteDataSource;
 
     private AddRemoveCarFragment addRemoveCarFragment;
 
@@ -53,6 +53,6 @@ public class AddRemoveCarActivity extends AppCompatActivity {
         // TODO: Improve code by injecting dependency using Dagger 2
         // Create the presenter.
         new AddRemoveCarPresenter(uid, addRemoveCarFragment,
-                emptyParkingBaysRemoteDataSource);
+                remoteDataSource);
     }
 }

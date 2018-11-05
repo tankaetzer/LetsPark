@@ -2,7 +2,7 @@ package com.example.android.letspark.addremovecar;
 
 import com.example.android.letspark.BasePresenter;
 import com.example.android.letspark.BaseView;
-import com.example.android.letspark.data.Car;
+import com.example.android.letspark.data.model.Car;
 
 import java.util.List;
 

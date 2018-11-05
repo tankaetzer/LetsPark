@@ -1,4 +1,4 @@
-package com.example.android.letspark.data;
+package com.example.android.letspark.data.model;
 
 /**
  * Immutable model class for a Car.

@@ -2,6 +2,9 @@ package com.example.android.letspark.data;
 
 import android.support.annotation.NonNull;
 
+import com.example.android.letspark.data.model.Car;
+import com.example.android.letspark.data.model.EmptyParkingBay;
+import com.example.android.letspark.data.model.User;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -18,7 +21,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Implementation of remote data source.
  */
-public class EmptyParkingBaysRemoteDataSource implements EmptyParkingBaysDataSource {
+public class RemoteDataSource implements DataSource {
 
     private List<EmptyParkingBay> emptyParkingBayList;
 
@@ -27,7 +30,7 @@ public class EmptyParkingBaysRemoteDataSource implements EmptyParkingBaysDataSou
     private DatabaseReference databaseReference;
 
     @Inject
-    EmptyParkingBaysRemoteDataSource(DatabaseReference databaseReference) {
+    RemoteDataSource(DatabaseReference databaseReference) {
         this.databaseReference = databaseReference;
     }
 

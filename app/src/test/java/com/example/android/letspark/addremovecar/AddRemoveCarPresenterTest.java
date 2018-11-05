@@ -2,9 +2,9 @@ package com.example.android.letspark.addremovecar;
 
 import android.test.suitebuilder.annotation.SmallTest;
 
-import com.example.android.letspark.data.Car;
-import com.example.android.letspark.data.EmptyParkingBaysDataSource;
-import com.example.android.letspark.data.EmptyParkingBaysRemoteDataSource;
+import com.example.android.letspark.data.model.Car;
+import com.example.android.letspark.data.DataSource;
+import com.example.android.letspark.data.RemoteDataSource;
 import com.google.common.collect.Lists;
 
 import org.junit.Before;
@@ -32,9 +32,9 @@ public class AddRemoveCarPresenterTest {
     @Mock
     private AddRemoveCarContract.View addRemoveCarView;
     @Mock
-    private EmptyParkingBaysRemoteDataSource emptyParkingBaysRemoteDataSource;
+    private RemoteDataSource remoteDataSource;
     @Captor
-    private ArgumentCaptor<EmptyParkingBaysDataSource.LoadUserCarsCallBack>
+    private ArgumentCaptor<DataSource.LoadUserCarsCallBack>
             loadUserCarsCallBackArgumentCaptor;
     private AddRemoveCarPresenter addRemoveCarPresenter;
     private String uid = "xxxxxxxx";
@@ -50,14 +50,14 @@ public class AddRemoveCarPresenterTest {
                 new Car("ASD", "AS"), new Car("ZXC", "ZX"));
 
         addRemoveCarPresenter = new AddRemoveCarPresenter(uid, addRemoveCarView,
-                emptyParkingBaysRemoteDataSource);
+                remoteDataSource);
     }
 
     @Test
     public void createPresenter_setsThePresenterToView() {
         // Get a reference to the class under test.
         addRemoveCarPresenter = new AddRemoveCarPresenter(uid, addRemoveCarView,
-                emptyParkingBaysRemoteDataSource);
+                remoteDataSource);
 
         // Then the presenter is set to the view.
         verify(addRemoveCarView).setPresenter(addRemoveCarPresenter);
@@ -92,7 +92,7 @@ public class AddRemoveCarPresenterTest {
         verify(addRemoveCarView).showProgressBar(true);
 
         // Callback is captured and invoked with stubbed carList.
-        verify(emptyParkingBaysRemoteDataSource).writeCarNumberPlate(anyString(),
+        verify(remoteDataSource).writeCarNumberPlate(anyString(),
                 anyString(), loadUserCarsCallBackArgumentCaptor.capture());
         loadUserCarsCallBackArgumentCaptor.getValue().onUserCarsLoaded(carList);
 
@@ -109,7 +109,7 @@ public class AddRemoveCarPresenterTest {
         verify(addRemoveCarView).showProgressBar(true);
 
         // Callback is captured and invoked with stubbed emptyParkingBay.
-        verify(emptyParkingBaysRemoteDataSource).writeCarNumberPlate(anyString(),
+        verify(remoteDataSource).writeCarNumberPlate(anyString(),
                 anyString(), loadUserCarsCallBackArgumentCaptor.capture());
         loadUserCarsCallBackArgumentCaptor.getValue().onCancelled(errMsg);
 
@@ -122,7 +122,7 @@ public class AddRemoveCarPresenterTest {
         addRemoveCarPresenter.loadUserCars();
 
         verify(addRemoveCarView).showProgressBar(true);
-        verify(emptyParkingBaysRemoteDataSource).getUserCars(anyString(),
+        verify(remoteDataSource).getUserCars(anyString(),
                 loadUserCarsCallBackArgumentCaptor.capture());
 
         loadUserCarsCallBackArgumentCaptor.getValue().onUserCarsLoaded(carList);
@@ -135,7 +135,7 @@ public class AddRemoveCarPresenterTest {
         addRemoveCarPresenter.loadUserCars();
 
         verify(addRemoveCarView).showProgressBar(true);
-        verify(emptyParkingBaysRemoteDataSource).getUserCars(anyString(),
+        verify(remoteDataSource).getUserCars(anyString(),
                 loadUserCarsCallBackArgumentCaptor.capture());
 
         loadUserCarsCallBackArgumentCaptor.getValue().onCancelled(errMsg);
@@ -151,7 +151,7 @@ public class AddRemoveCarPresenterTest {
         addRemoveCarPresenter.removeCar(car);
 
         verify(addRemoveCarView).showProgressBar(true);
-        verify(emptyParkingBaysRemoteDataSource).deleteCar(anyString(), anyString(),
+        verify(remoteDataSource).deleteCar(anyString(), anyString(),
                 loadUserCarsCallBackArgumentCaptor.capture());
         loadUserCarsCallBackArgumentCaptor.getValue().onUserCarsLoaded(carList);
         verify(addRemoveCarView).showProgressBar(false);
@@ -165,7 +165,7 @@ public class AddRemoveCarPresenterTest {
         addRemoveCarPresenter.removeCar(car);
 
         verify(addRemoveCarView).showProgressBar(true);
-        verify(emptyParkingBaysRemoteDataSource).deleteCar(anyString(), anyString(),
+        verify(remoteDataSource).deleteCar(anyString(), anyString(),
                 loadUserCarsCallBackArgumentCaptor.capture());
         loadUserCarsCallBackArgumentCaptor.getValue().onCancelled(errMsg);
         verify(addRemoveCarView).showProgressBar(false);

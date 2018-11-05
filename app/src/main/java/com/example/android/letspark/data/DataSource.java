@@ -1,12 +1,14 @@
 package com.example.android.letspark.data;
 
+import com.example.android.letspark.data.model.Car;
+import com.example.android.letspark.data.model.EmptyParkingBay;
+
 import java.util.List;
 
 /**
  * Main entry point for accessing empty parking bays data.
  */
-// TODO: rename to remote data source
-public interface EmptyParkingBaysDataSource {
+public interface DataSource {
 
     void getEmptyParkingBays(LoadEmptyParkingBaysCallBack callBack);
 

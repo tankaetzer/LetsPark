@@ -1,7 +1,7 @@
-package com.example.android.letspark.letsparkparkingbays;
+package com.example.android.letspark.home;
 
-import com.example.android.letspark.data.EmptyParkingBay;
-import com.example.android.letspark.data.EmptyParkingBaysDataSource;
+import com.example.android.letspark.data.model.EmptyParkingBay;
+import com.example.android.letspark.data.DataSource;
 import com.example.android.letspark.service.Service;
 import com.google.android.gms.location.LocationSettingsResponse;
 
@@ -10,18 +10,18 @@ import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 import static com.example.android.letspark.addremovecar.AddRemoveCarActivity.REQUEST_ADD_REMOVE_CAR;
-import static com.example.android.letspark.letsparkparkingbays.EmptyParkingBaysActivity.REQUEST_CHECK_SETTINGS;
+import static com.example.android.letspark.home.HomeActivity.REQUEST_CHECK_SETTINGS;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Listens to user actions from the UI (EmptyParkingBaysFragment), retrieves the data and updates
+ * Listens to user actions from the UI (HomeFragment), retrieves the data and updates
  * the UI as required.
  */
-public class EmptyParkingBaysPresenter implements EmptyParkingBaysContract.Presenter {
+public class HomePresenter implements HomeContract.Presenter {
 
-    private EmptyParkingBaysDataSource emptyParkingBaysRemoteEmptyParkingBaysDataSource;
+    private DataSource dataSource;
 
-    private EmptyParkingBaysContract.View emptyParkingBaysView;
+    private HomeContract.View homeView;
 
     private Service.LocationService locationService;
 
@@ -31,35 +31,35 @@ public class EmptyParkingBaysPresenter implements EmptyParkingBaysContract.Prese
 
     private String uid;
 
-    public EmptyParkingBaysPresenter(String uid,
-                                     EmptyParkingBaysDataSource emptyParkingBaysRemoteEmptyParkingBaysDataSource,
-                                     EmptyParkingBaysContract.View emptyParkingBaysView,
-                                     Service.LocationService locationService,
-                                     Service.DistanceMatrixService distanceMatrixService,
-                                     Service.ConnectivityService connectivityService) {
+    public HomePresenter(String uid,
+                         DataSource dataSource,
+                         HomeContract.View homeView,
+                         Service.LocationService locationService,
+                         Service.DistanceMatrixService distanceMatrixService,
+                         Service.ConnectivityService connectivityService) {
         this.uid = uid;
-        this.emptyParkingBaysRemoteEmptyParkingBaysDataSource = checkNotNull(emptyParkingBaysRemoteEmptyParkingBaysDataSource);
-        this.emptyParkingBaysView = checkNotNull(emptyParkingBaysView);
+        this.dataSource = checkNotNull(dataSource);
+        this.homeView = checkNotNull(homeView);
         this.locationService = checkNotNull(locationService);
         this.distanceMatrixService = checkNotNull(distanceMatrixService);
         this.connectivityService = checkNotNull(connectivityService);
 
-        emptyParkingBaysView.setPresenter(this);
+        homeView.setPresenter(this);
     }
 
     @Override
     public void loadEmptyParkingBays() {
-        emptyParkingBaysRemoteEmptyParkingBaysDataSource.getEmptyParkingBays(new EmptyParkingBaysDataSource.
+        dataSource.getEmptyParkingBays(new DataSource.
                 LoadEmptyParkingBaysCallBack() {
             @Override
             public void onEmptyParkingBaysLoaded(List<EmptyParkingBay> emptyParkingBayList) {
                 List<EmptyParkingBay> temp = filterEmptyParkingBays(emptyParkingBayList);
-                emptyParkingBaysView.showEmptyParkingBays(temp);
+                homeView.showEmptyParkingBays(temp);
             }
 
             @Override
             public void onDataNotAvailable() {
-                emptyParkingBaysView.showLoadingEmptyParkingBaysError();
+                homeView.showLoadingEmptyParkingBaysError();
             }
         });
     }
@@ -75,14 +75,14 @@ public class EmptyParkingBaysPresenter implements EmptyParkingBaysContract.Prese
                 GetLocationSettingResponseCallback() {
             @Override
             public void onSatisfyLocationSetting(LocationSettingsResponse locationSettingsResponse) {
-                askLocationPermission(emptyParkingBaysView.checkSelfPermission(),
-                        emptyParkingBaysView
+                askLocationPermission(homeView.checkSelfPermission(),
+                        homeView
                                 .shouldShowRequestPermissionRationale());
             }
 
             @Override
             public void onNotSatisfyLocationSetting(Exception e) {
-                emptyParkingBaysView.showLocationSettingDialog(e);
+                homeView.showLocationSettingDialog(e);
             }
         });
     }
@@ -93,9 +93,9 @@ public class EmptyParkingBaysPresenter implements EmptyParkingBaysContract.Prese
         if (notGranted) {
             // True if permission is not granted since user has previously denied the request.
             if (showRequestPermissionRationale) {
-                emptyParkingBaysView.showLocationErrMsgWithAction();
+                homeView.showLocationErrMsgWithAction();
             } else {
-                emptyParkingBaysView.requestLocationPermissions();
+                homeView.requestLocationPermissions();
             }
         } else {
             // Permission has already been granted.
@@ -111,7 +111,7 @@ public class EmptyParkingBaysPresenter implements EmptyParkingBaysContract.Prese
      */
     @Override
     public void requestDistanceMatrix(final String destinationLatLng, final double rate) {
-        emptyParkingBaysView.showProgressBar(true);
+        homeView.showProgressBar(true);
         locationService.getLastKnownLocationResponse(new Service.LocationService
                 .GetLastKnownLocationResponseCallback() {
             @Override
@@ -158,29 +158,29 @@ public class EmptyParkingBaysPresenter implements EmptyParkingBaysContract.Prese
 
             @Override
             public void onInternetUnavailable() {
-                emptyParkingBaysView.showConnectivityErrMsg();
+                homeView.showConnectivityErrMsg();
             }
         });
     }
 
     @Override
     public void hideDistanceDurationRateTextviewAndProgressbar() {
-        emptyParkingBaysView.showProgressBar(false);
-        emptyParkingBaysView.showDistanceDurationAndRate(false);
+        homeView.showProgressBar(false);
+        homeView.showDistanceDurationAndRate(false);
     }
 
     @Override
     public void processOnLastKnowLocationIsNullView(boolean isInternetConnect, double rate) {
 
-        emptyParkingBaysView.showProgressBar(false);
+        homeView.showProgressBar(false);
 
         if (isInternetConnect) {
-            emptyParkingBaysView.setRateAndDefaultDistanceDuration(rate);
-            emptyParkingBaysView.showDistanceDurationAndRate(true);
-            emptyParkingBaysView.showGettingLocationMsg();
+            homeView.setRateAndDefaultDistanceDuration(rate);
+            homeView.showDistanceDurationAndRate(true);
+            homeView.showGettingLocationMsg();
         } else {
-            emptyParkingBaysView.showDistanceDurationAndRate(false);
-            emptyParkingBaysView.showConnectivityAndLocationErrMsg();
+            homeView.showDistanceDurationAndRate(false);
+            homeView.showConnectivityAndLocationErrMsg();
         }
     }
 
@@ -192,17 +192,17 @@ public class EmptyParkingBaysPresenter implements EmptyParkingBaysContract.Prese
                     @Override
                     public void onDistanceAndDurationReceived(String distance,
                                                               String duration) {
-                        emptyParkingBaysView.showProgressBar(false);
-                        emptyParkingBaysView.setDistanceDurationAndRate(distance, duration,
+                        homeView.showProgressBar(false);
+                        homeView.setDistanceDurationAndRate(distance, duration,
                                 rate);
-                        emptyParkingBaysView.showDistanceDurationAndRate(true);
+                        homeView.showDistanceDurationAndRate(true);
                     }
 
                     @Override
                     public void onNoInternet() {
-                        emptyParkingBaysView.showProgressBar(false);
-                        emptyParkingBaysView.showDistanceDurationAndRate(false);
-                        emptyParkingBaysView.showDistanceDurationCalculationErrMsg();
+                        homeView.showProgressBar(false);
+                        homeView.showDistanceDurationAndRate(false);
+                        homeView.showDistanceDurationCalculationErrMsg();
                     }
                 });
     }
@@ -221,21 +221,21 @@ public class EmptyParkingBaysPresenter implements EmptyParkingBaysContract.Prese
 
     @Override
     public void selectCar() {
-        emptyParkingBaysView.showAddRemoveCarUi(uid);
+        homeView.showAddRemoveCarUi(uid);
     }
 
     @Override
     public void result(int requestCode, int resultCode) {
         if (requestCode == REQUEST_CHECK_SETTINGS && resultCode == RESULT_OK) {
-            askLocationPermission(emptyParkingBaysView.checkSelfPermission(),
-                    emptyParkingBaysView.shouldShowRequestPermissionRationale());
+            askLocationPermission(homeView.checkSelfPermission(),
+                    homeView.shouldShowRequestPermissionRationale());
         } else if (requestCode == REQUEST_ADD_REMOVE_CAR && resultCode == RESULT_OK) {
-            emptyParkingBaysView.showSelectedCar();
+            homeView.showSelectedCar();
         }
     }
 
     @Override
     public void selectDuration() {
-        emptyParkingBaysView.showDurationOptionDialog();
+        homeView.showDurationOptionDialog();
     }
 }

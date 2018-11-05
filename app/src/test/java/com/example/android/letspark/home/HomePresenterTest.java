@@ -1,10 +1,10 @@
-package com.example.android.letspark.letsparkparkingbays;
+package com.example.android.letspark.home;
 
 import android.test.suitebuilder.annotation.SmallTest;
 
-import com.example.android.letspark.data.EmptyParkingBay;
-import com.example.android.letspark.data.EmptyParkingBaysDataSource;
-import com.example.android.letspark.data.EmptyParkingBaysRemoteDataSource;
+import com.example.android.letspark.data.DataSource;
+import com.example.android.letspark.data.model.EmptyParkingBay;
+import com.example.android.letspark.data.RemoteDataSource;
 import com.example.android.letspark.service.ConnectivityService;
 import com.example.android.letspark.service.DistanceMatrixService;
 import com.example.android.letspark.service.LocationService;
@@ -27,20 +27,20 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 
 /**
- * Unit tests for the implementation of EmptyParkingBaysPresenter.
+ * Unit tests for the implementation of HomePresenter.
  */
 @SmallTest
-public class EmptyParkingBaysPresenterTest {
+public class HomePresenterTest {
 
     private static List<EmptyParkingBay> emptyParkingBayList;
 
     private static List<EmptyParkingBay> filterEmptyParkingBayList;
 
     @Mock
-    private EmptyParkingBaysContract.View emptyParkingBaysView;
+    private HomeContract.View homeView;
 
     @Mock
-    private EmptyParkingBaysRemoteDataSource emptyParkingBaysRemoteDataSource;
+    private RemoteDataSource remoteDataSource;
 
     @Mock
     private LocationService locationService;
@@ -52,7 +52,7 @@ public class EmptyParkingBaysPresenterTest {
     private ConnectivityService connectivityService;
 
     @Captor
-    private ArgumentCaptor<EmptyParkingBaysDataSource.LoadEmptyParkingBaysCallBack>
+    private ArgumentCaptor<DataSource.LoadEmptyParkingBaysCallBack>
             loadEmptyParkingBaysCallBackArgumentCaptor;
 
     @Captor
@@ -71,7 +71,7 @@ public class EmptyParkingBaysPresenterTest {
     private ArgumentCaptor<Service.DistanceMatrixService.GetDistanceMatrixResponseCallback>
             getDistanceMatrixResponseCallbackArgumentCaptor;
 
-    private EmptyParkingBaysPresenter emptyParkingBaysPresenter;
+    private HomePresenter homePresenter;
 
 
     private double rate = 0.80;
@@ -86,8 +86,8 @@ public class EmptyParkingBaysPresenterTest {
         MockitoAnnotations.initMocks(this);
 
         // Get a reference to the class under test.
-        emptyParkingBaysPresenter = new EmptyParkingBaysPresenter(uid, emptyParkingBaysRemoteDataSource,
-                emptyParkingBaysView, locationService, distanceMatrixService, connectivityService);
+        homePresenter = new HomePresenter(uid, remoteDataSource,
+                homeView, locationService, distanceMatrixService, connectivityService);
 
         // Add 2 empty parking bays into list.
         emptyParkingBayList = Lists.newArrayList(
@@ -103,67 +103,67 @@ public class EmptyParkingBaysPresenterTest {
     @Test
     public void createPresenter_setsThePresenterToView() {
         // Get a reference to the class under test.
-        emptyParkingBaysPresenter = new EmptyParkingBaysPresenter(uid, emptyParkingBaysRemoteDataSource,
-                emptyParkingBaysView, locationService, distanceMatrixService, connectivityService);
+        homePresenter = new HomePresenter(uid, remoteDataSource,
+                homeView, locationService, distanceMatrixService, connectivityService);
 
         // Then the presenter is set to the view.
-        verify(emptyParkingBaysView).setPresenter(emptyParkingBaysPresenter);
+        verify(homeView).setPresenter(homePresenter);
     }
 
     @Test
     public void loadAllTasksFromRemoteDataSourceAndLoadIntoView_firesOnEmptyParkingBaysLoaded() {
 
-        emptyParkingBaysPresenter.loadEmptyParkingBays();
+        homePresenter.loadEmptyParkingBays();
 
         // Callback is captured and invoked with stubbed emptyParkingBay.
-        verify(emptyParkingBaysRemoteDataSource).getEmptyParkingBays(
+        verify(remoteDataSource).getEmptyParkingBays(
                 loadEmptyParkingBaysCallBackArgumentCaptor.capture());
         loadEmptyParkingBaysCallBackArgumentCaptor.getValue()
                 .onEmptyParkingBaysLoaded(emptyParkingBayList);
 
         // Check whether showEmptyParkingBays is called.
-        verify(emptyParkingBaysView).showEmptyParkingBays(emptyParkingBayList);
+        verify(homeView).showEmptyParkingBays(emptyParkingBayList);
     }
 
     @Test
     public void loadAllTasksFromRemoteDataSourceAndLoadIntoView_firesOnDataNotAvailable() {
 
-        emptyParkingBaysPresenter.loadEmptyParkingBays();
+        homePresenter.loadEmptyParkingBays();
 
         // Callback is captured.
-        verify(emptyParkingBaysRemoteDataSource).getEmptyParkingBays(
+        verify(remoteDataSource).getEmptyParkingBays(
                 loadEmptyParkingBaysCallBackArgumentCaptor.capture());
         loadEmptyParkingBaysCallBackArgumentCaptor.getValue().onDataNotAvailable();
 
         // Check whether showEmptyParkingBays is called.
-        verify(emptyParkingBaysView).showLoadingEmptyParkingBaysError();
+        verify(homeView).showLoadingEmptyParkingBaysError();
     }
 
     @Test
     public void askLocationPermission_notGrantedIsTrue_showRequestPermissionRationaleIsTrue_showLocationErrMsgWithAction() {
-        emptyParkingBaysPresenter.askLocationPermission(true,
+        homePresenter.askLocationPermission(true,
                 true);
 
         // Check whether showLocationErrMsgWithAction is called.
-        verify(emptyParkingBaysView).showLocationErrMsgWithAction();
+        verify(homeView).showLocationErrMsgWithAction();
     }
 
     @Test
     public void askLocationPermission_notGrantedIsTrue_showRequestPermissionRationaleIsFalse_requestLocationPermission() {
-        emptyParkingBaysPresenter.askLocationPermission(true,
+        homePresenter.askLocationPermission(true,
                 false);
 
         // Check whether requestLocationPermissions is called.
-        verify(emptyParkingBaysView).requestLocationPermissions();
+        verify(homeView).requestLocationPermissions();
     }
 
     @Test
     public void askLocationPermission_notGrantedIsFalse_getEmptyParkingBays() {
-        emptyParkingBaysPresenter.askLocationPermission(false,
+        homePresenter.askLocationPermission(false,
                 false);
 
         // Check whether loadEmptyParkingBays is called.
-        verify(emptyParkingBaysRemoteDataSource)
+        verify(remoteDataSource)
                 .getEmptyParkingBays(loadEmptyParkingBaysCallBackArgumentCaptor.capture());
     }
 
@@ -174,7 +174,7 @@ public class EmptyParkingBaysPresenterTest {
     public void askLocationSetting_onSatisfyLocationSetting_askLocationPermission() {
         LocationSettingsResponse locationSettingsResponse = new LocationSettingsResponse();
 
-        emptyParkingBaysPresenter.askLocationSetting();
+        homePresenter.askLocationSetting();
 
         // Callback is captured.
         verify(locationService).getLocationSettingResponse(
@@ -185,7 +185,7 @@ public class EmptyParkingBaysPresenterTest {
 
     @Test
     public void askLocationSetting_onNotSatisfyLocationSetting_showLocationSettingDialog() {
-        emptyParkingBaysPresenter.askLocationSetting();
+        homePresenter.askLocationSetting();
 
         // Callback is captured and invoked with exception.
         verify(locationService).getLocationSettingResponse(
@@ -193,7 +193,7 @@ public class EmptyParkingBaysPresenterTest {
         getLocationSettingResponseCallbackArgumentCaptor.getValue().onNotSatisfyLocationSetting(e);
 
         // Check whether showLocationSettingDialog is called.
-        verify(emptyParkingBaysView).showLocationSettingDialog(e);
+        verify(homeView).showLocationSettingDialog(e);
     }
 
     @Test
@@ -203,10 +203,10 @@ public class EmptyParkingBaysPresenterTest {
         String destinationLatLng = "2,2";
         double rate = 0.80;
 
-        emptyParkingBaysPresenter.requestDistanceMatrix(destinationLatLng, rate);
+        homePresenter.requestDistanceMatrix(destinationLatLng, rate);
 
         // Check whether showProgressBar with true value is called.
-        verify(emptyParkingBaysView).showProgressBar(true);
+        verify(homeView).showProgressBar(true);
 
         // Callback is captured and invoked with stubbed originLatLng.
         verify(locationService).getLastKnownLocationResponse
@@ -228,7 +228,7 @@ public class EmptyParkingBaysPresenterTest {
         String distance = "3.6 km";
         String duration = "6 mins";
 
-        emptyParkingBaysPresenter.getDistanceMatrixResponse(originLatLng, destinationLatLng, rate);
+        homePresenter.getDistanceMatrixResponse(originLatLng, destinationLatLng, rate);
 
         // Callback is captured and invoked with stubbed distance and duration.
         verify(distanceMatrixService).getDistanceMatrixResponse(anyString(),
@@ -239,9 +239,9 @@ public class EmptyParkingBaysPresenterTest {
 
         // Check whether showProgressBar with false value, setDistanceDurationAndRate and
         // showProgressBar with true value is called.
-        verify(emptyParkingBaysView).showProgressBar(false);
-        verify(emptyParkingBaysView).setDistanceDurationAndRate(distance, duration, rate);
-        verify(emptyParkingBaysView).showDistanceDurationAndRate(true);
+        verify(homeView).showProgressBar(false);
+        verify(homeView).setDistanceDurationAndRate(distance, duration, rate);
+        verify(homeView).showDistanceDurationAndRate(true);
     }
 
     @Test
@@ -249,7 +249,7 @@ public class EmptyParkingBaysPresenterTest {
         String originLatLng = "1,1";
         String destinationLatLng = "2,2";
 
-        emptyParkingBaysPresenter.getDistanceMatrixResponse(originLatLng, destinationLatLng, rate);
+        homePresenter.getDistanceMatrixResponse(originLatLng, destinationLatLng, rate);
 
         // Callback is captured.
         verify(distanceMatrixService).getDistanceMatrixResponse(anyString(),
@@ -259,9 +259,9 @@ public class EmptyParkingBaysPresenterTest {
 
         // Check whether showProgressBar with false value, setDistanceDurationAndRate with false
         // value and showDistanceDurationCalculationErrMsg is called.
-        verify(emptyParkingBaysView).showProgressBar(false);
-        verify(emptyParkingBaysView).showDistanceDurationAndRate(false);
-        verify(emptyParkingBaysView).showDistanceDurationCalculationErrMsg();
+        verify(homeView).showProgressBar(false);
+        verify(homeView).showDistanceDurationAndRate(false);
+        verify(homeView).showDistanceDurationCalculationErrMsg();
     }
 
     @Test
@@ -269,9 +269,9 @@ public class EmptyParkingBaysPresenterTest {
 
         String destinationLatLng = "2,2";
 
-        emptyParkingBaysPresenter.requestDistanceMatrix(destinationLatLng, rate);
+        homePresenter.requestDistanceMatrix(destinationLatLng, rate);
 
-        verify(emptyParkingBaysView).showProgressBar(true);
+        verify(homeView).showProgressBar(true);
 
         verify(locationService).getLastKnownLocationResponse
                 (getLastKnownLocationResponseCallbackArgumentCaptor.capture());
@@ -280,25 +280,25 @@ public class EmptyParkingBaysPresenterTest {
 
     @Test
     public void createLocationCallback_newLocationCallback() {
-        emptyParkingBaysPresenter.createLocationCallback();
+        homePresenter.createLocationCallback();
         verify(locationService).newLocationCallback();
     }
 
     @Test
     public void startLocationUpdate_requestLocationUpdates() {
-        emptyParkingBaysPresenter.startLocationUpdate();
+        homePresenter.startLocationUpdate();
         verify(locationService).requestLocationUpdates();
     }
 
     @Test
     public void stopLocationUpdate_removeLocationUpdates() {
-        emptyParkingBaysPresenter.stopLocationUpdate();
+        homePresenter.stopLocationUpdate();
         verify(locationService).removeLocationUpdates();
     }
 
     @Test
     public void getConnectivityStatus_isConnected() {
-        emptyParkingBaysPresenter.getConnectivityStatus();
+        homePresenter.getConnectivityStatus();
         verify(connectivityService).isConnected();
     }
 
@@ -309,7 +309,7 @@ public class EmptyParkingBaysPresenterTest {
     public void getConnectivityStatusResponse_onInternetAvailableReceived_askLocationSetting() {
 
 
-        emptyParkingBaysPresenter.checkConnectivity();
+        homePresenter.checkConnectivity();
 
         // Callback is captured.
         verify(connectivityService).getConnectivityStatusResponse
@@ -322,44 +322,44 @@ public class EmptyParkingBaysPresenterTest {
     @Test
     public void getConnectivityStatusResponse_onInternetUnavailable_showConnectivityErrMsg() {
 
-        emptyParkingBaysPresenter.checkConnectivity();
+        homePresenter.checkConnectivity();
 
         // Callback is captured.
         verify(connectivityService).getConnectivityStatusResponse
                 (getConnectivityStatusResponseCallbackArgumentCaptor.capture());
         getConnectivityStatusResponseCallbackArgumentCaptor.getValue().onInternetUnavailable();
 
-        emptyParkingBaysView.showConnectivityErrMsg();
+        homeView.showConnectivityErrMsg();
     }
 
     @Test
     public void hideDistanceDurationRateTextviewAndProgressbar_showProgressBarAndshowDistanceDurationAndRateValueIsFalse() {
-        emptyParkingBaysPresenter.hideDistanceDurationRateTextviewAndProgressbar();
+        homePresenter.hideDistanceDurationRateTextviewAndProgressbar();
 
-        verify(emptyParkingBaysView).showProgressBar(false);
-        verify(emptyParkingBaysView).showDistanceDurationAndRate(false);
+        verify(homeView).showProgressBar(false);
+        verify(homeView).showDistanceDurationAndRate(false);
     }
 
     @Test
     public void processOnLastKnowLocationIsNullView_internetIsConnected_showProgressbarSetRateAndDefaultDistanceDurationShowDistanceDurationAndRateShowGettingLocationMsg() {
-        emptyParkingBaysPresenter.processOnLastKnowLocationIsNullView(true, rate);
-        verify(emptyParkingBaysView).showProgressBar(false);
-        verify(emptyParkingBaysView).setRateAndDefaultDistanceDuration(rate);
-        verify(emptyParkingBaysView).showDistanceDurationAndRate(true);
-        verify(emptyParkingBaysView).showGettingLocationMsg();
+        homePresenter.processOnLastKnowLocationIsNullView(true, rate);
+        verify(homeView).showProgressBar(false);
+        verify(homeView).setRateAndDefaultDistanceDuration(rate);
+        verify(homeView).showDistanceDurationAndRate(true);
+        verify(homeView).showGettingLocationMsg();
     }
 
     @Test
     public void processOnLastKnowLocationIsNullView_noInternet_showProgressbarHideDistanceDurationAndRateshowConnectivityAndLocationErrMsg() {
-        emptyParkingBaysPresenter.processOnLastKnowLocationIsNullView(false, rate);
-        verify(emptyParkingBaysView).showProgressBar(false);
-        verify(emptyParkingBaysView).showDistanceDurationAndRate(false);
-        emptyParkingBaysView.showConnectivityAndLocationErrMsg();
+        homePresenter.processOnLastKnowLocationIsNullView(false, rate);
+        verify(homeView).showProgressBar(false);
+        verify(homeView).showDistanceDurationAndRate(false);
+        homeView.showConnectivityAndLocationErrMsg();
     }
 
     @Test
     public void filterEmptyParkingBays_oneOfTwoParkingBaysIsEmpty_returnEmptyParkingBaysSizeIsOne() {
-        List<EmptyParkingBay> temp = emptyParkingBaysPresenter.filterEmptyParkingBays(filterEmptyParkingBayList);
+        List<EmptyParkingBay> temp = homePresenter.filterEmptyParkingBays(filterEmptyParkingBayList);
         assertThat(temp.size(), is(1));
     }
 }

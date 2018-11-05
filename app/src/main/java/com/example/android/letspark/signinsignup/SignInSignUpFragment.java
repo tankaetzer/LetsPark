@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.android.letspark.R;
-import com.example.android.letspark.letsparkparkingbays.EmptyParkingBaysActivity;
+import com.example.android.letspark.home.HomeActivity;
 import com.firebase.ui.auth.AuthUI;
 
 import java.util.Arrays;
@@ -91,9 +91,9 @@ public class SignInSignUpFragment extends Fragment implements SignInSignUpContra
     }
 
     @Override
-    public void showEmptyParkingBaysUi(String uid) {
-        Intent intent = new Intent(getContext(), EmptyParkingBaysActivity.class);
-        intent.putExtra(EmptyParkingBaysActivity.EXTRA_UID, uid);
+    public void showHomeUi(String uid) {
+        Intent intent = new Intent(getContext(), HomeActivity.class);
+        intent.putExtra(HomeActivity.EXTRA_UID, uid);
         startActivity(intent);
     }
 }

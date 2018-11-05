@@ -1,4 +1,4 @@
-package com.example.android.letspark.letsparkparkingbays;
+package com.example.android.letspark.home;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -23,7 +23,7 @@ import android.widget.TextView;
 
 import com.example.android.letspark.R;
 import com.example.android.letspark.addremovecar.AddRemoveCarActivity;
-import com.example.android.letspark.data.EmptyParkingBay;
+import com.example.android.letspark.data.model.EmptyParkingBay;
 import com.example.android.letspark.utility.NumberUtils;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -38,16 +38,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.List;
 
 import static com.example.android.letspark.addremovecar.AddRemoveCarActivity.REQUEST_ADD_REMOVE_CAR;
-import static com.example.android.letspark.letsparkparkingbays.EmptyParkingBaysActivity.EXTRA_CAR_NUMBER_PLATE;
-import static com.example.android.letspark.letsparkparkingbays.EmptyParkingBaysActivity.LOCATION_PERMISSION_REQUEST_CODE;
-import static com.example.android.letspark.letsparkparkingbays.EmptyParkingBaysActivity.REQUEST_CHECK_SETTINGS;
+import static com.example.android.letspark.home.HomeActivity.EXTRA_CAR_NUMBER_PLATE;
+import static com.example.android.letspark.home.HomeActivity.LOCATION_PERMISSION_REQUEST_CODE;
+import static com.example.android.letspark.home.HomeActivity.REQUEST_CHECK_SETTINGS;
 
 /**
  * Display markers on Google map. Each marker is an empty parking bay.
  */
-public class EmptyParkingBaysFragment extends Fragment implements EmptyParkingBaysContract.View {
+public class HomeFragment extends Fragment implements HomeContract.View {
 
-    private EmptyParkingBaysContract.Presenter emptyParkingBaysPresenter;
+    private HomeContract.Presenter homePresenter;
 
     private SupportMapFragment mapFragment;
 
@@ -77,25 +77,25 @@ public class EmptyParkingBaysFragment extends Fragment implements EmptyParkingBa
 
     private RadioButton radio_thirty_days;
 
-    public EmptyParkingBaysFragment() {
+    public HomeFragment() {
         // Require empty constructor so it can be instantiated when restoring Activity's state.
     }
 
-    public static EmptyParkingBaysFragment newInstance() {
-        return new EmptyParkingBaysFragment();
+    public static HomeFragment newInstance() {
+        return new HomeFragment();
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        emptyParkingBaysPresenter.createLocationCallback();
+        homePresenter.createLocationCallback();
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        root = inflater.inflate(R.layout.fragment_empty_parking_bays, container, false);
+        root = inflater.inflate(R.layout.fragment_home, container, false);
 
         // Add Google Map fragment to current fragment.
         if (mapFragment == null) {
@@ -104,7 +104,7 @@ public class EmptyParkingBaysFragment extends Fragment implements EmptyParkingBa
                 @Override
                 public void onMapReady(GoogleMap googleMap) {
                     setGoogleMap(googleMap);
-                    emptyParkingBaysPresenter.start();
+                    homePresenter.start();
                 }
             });
         }
@@ -140,14 +140,14 @@ public class EmptyParkingBaysFragment extends Fragment implements EmptyParkingBa
         text_select_car.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                emptyParkingBaysPresenter.selectCar();
+                homePresenter.selectCar();
             }
         });
 
         text_select_duration.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                emptyParkingBaysPresenter.selectDuration();
+                homePresenter.selectDuration();
             }
         });
 
@@ -162,14 +162,14 @@ public class EmptyParkingBaysFragment extends Fragment implements EmptyParkingBa
     @Override
     public void onResume() {
         super.onResume();
-        emptyParkingBaysPresenter.createLocationCallback();
-        emptyParkingBaysPresenter.startLocationUpdate();
+        homePresenter.createLocationCallback();
+        homePresenter.startLocationUpdate();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        emptyParkingBaysPresenter.stopLocationUpdate();
+        homePresenter.stopLocationUpdate();
     }
 
     @Override
@@ -182,7 +182,7 @@ public class EmptyParkingBaysFragment extends Fragment implements EmptyParkingBa
                 text_select_car.setTextColor(getResources().getColor(R.color.colorHint));
             }
         }
-        emptyParkingBaysPresenter.result(requestCode, resultCode);
+        homePresenter.result(requestCode, resultCode);
     }
 
     /**
@@ -196,7 +196,7 @@ public class EmptyParkingBaysFragment extends Fragment implements EmptyParkingBa
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission has been granted.
                 showMessage(getString(R.string.permission_location_granted));
-                emptyParkingBaysPresenter.loadEmptyParkingBays();
+                homePresenter.loadEmptyParkingBays();
             } else if (!shouldShowRequestPermissionRationale(
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
                 showMessage(getString(R.string.permission_location_never_show_again));
@@ -232,7 +232,7 @@ public class EmptyParkingBaysFragment extends Fragment implements EmptyParkingBa
                 }
                 String destinationLatLng = Double.toString(marker.getPosition().latitude) + "," +
                         Double.toString(marker.getPosition().longitude);
-                emptyParkingBaysPresenter.requestDistanceMatrix(destinationLatLng, rate);
+                homePresenter.requestDistanceMatrix(destinationLatLng, rate);
                 return false;
             }
         });
@@ -241,14 +241,14 @@ public class EmptyParkingBaysFragment extends Fragment implements EmptyParkingBa
         getMap().setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                emptyParkingBaysPresenter.hideDistanceDurationRateTextviewAndProgressbar();
+                homePresenter.hideDistanceDurationRateTextviewAndProgressbar();
             }
         });
     }
 
     @Override
-    public void setPresenter(EmptyParkingBaysContract.Presenter presenter) {
-        emptyParkingBaysPresenter = presenter;
+    public void setPresenter(HomeContract.Presenter presenter) {
+        homePresenter = presenter;
     }
 
     @Override
@@ -366,7 +366,7 @@ public class EmptyParkingBaysFragment extends Fragment implements EmptyParkingBa
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        emptyParkingBaysPresenter.checkConnectivity();
+                        homePresenter.checkConnectivity();
                     }
                 }).show();
     }
