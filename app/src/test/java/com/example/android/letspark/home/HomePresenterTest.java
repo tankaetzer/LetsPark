@@ -1,14 +1,13 @@
 package com.example.android.letspark.home;
 
-import android.test.suitebuilder.annotation.SmallTest;
-
 import com.example.android.letspark.data.DataSource;
-import com.example.android.letspark.data.model.EmptyParkingBay;
 import com.example.android.letspark.data.RemoteDataSource;
+import com.example.android.letspark.data.model.EmptyParkingBay;
 import com.example.android.letspark.service.ConnectivityService;
 import com.example.android.letspark.service.DistanceMatrixService;
 import com.example.android.letspark.service.LocationService;
 import com.example.android.letspark.service.Service;
+import com.example.android.letspark.service.SharedPreferenceService;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.common.collect.Lists;
 
@@ -21,6 +20,8 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.List;
 
+import static android.app.Activity.RESULT_OK;
+import static com.example.android.letspark.addremovecar.AddRemoveCarActivity.REQUEST_ADD_REMOVE_CAR;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyString;
@@ -29,7 +30,6 @@ import static org.mockito.Mockito.verify;
 /**
  * Unit tests for the implementation of HomePresenter.
  */
-@SmallTest
 public class HomePresenterTest {
 
     private static List<EmptyParkingBay> emptyParkingBayList;
@@ -50,6 +50,9 @@ public class HomePresenterTest {
 
     @Mock
     private ConnectivityService connectivityService;
+
+    @Mock
+    private SharedPreferenceService sharedPreferenceService;
 
     @Captor
     private ArgumentCaptor<DataSource.LoadEmptyParkingBaysCallBack>
@@ -73,10 +76,7 @@ public class HomePresenterTest {
 
     private HomePresenter homePresenter;
 
-
     private double rate = 0.80;
-
-    private String uid = "xxxxxxx";
 
     private Exception e;
 
@@ -86,8 +86,8 @@ public class HomePresenterTest {
         MockitoAnnotations.initMocks(this);
 
         // Get a reference to the class under test.
-        homePresenter = new HomePresenter(uid, remoteDataSource,
-                homeView, locationService, distanceMatrixService, connectivityService);
+        homePresenter = new HomePresenter(remoteDataSource, homeView, locationService,
+                distanceMatrixService, connectivityService, sharedPreferenceService);
 
         // Add 2 empty parking bays into list.
         emptyParkingBayList = Lists.newArrayList(
@@ -103,8 +103,8 @@ public class HomePresenterTest {
     @Test
     public void createPresenter_setsThePresenterToView() {
         // Get a reference to the class under test.
-        homePresenter = new HomePresenter(uid, remoteDataSource,
-                homeView, locationService, distanceMatrixService, connectivityService);
+        homePresenter = new HomePresenter(remoteDataSource, homeView, locationService,
+                distanceMatrixService, connectivityService, sharedPreferenceService);
 
         // Then the presenter is set to the view.
         verify(homeView).setPresenter(homePresenter);
@@ -361,5 +361,93 @@ public class HomePresenterTest {
     public void filterEmptyParkingBays_oneOfTwoParkingBaysIsEmpty_returnEmptyParkingBaysSizeIsOne() {
         List<EmptyParkingBay> temp = homePresenter.filterEmptyParkingBays(filterEmptyParkingBayList);
         assertThat(temp.size(), is(1));
+    }
+
+    @Test
+    public void selectCar_showAddRemoveCarUi() {
+        homePresenter.selectCar();
+
+        verify(homeView).showAddRemoveCarUi();
+    }
+
+    @Test
+    public void result_REQUEST_ADD_REMOVE_CARAndRESULT_OK_showSelectedCar() {
+        homePresenter.result(REQUEST_ADD_REMOVE_CAR, RESULT_OK);
+        verify(homeView).showSelectedCar();
+    }
+
+    @Test
+    public void selectDuration_showDurationOptionDialog() {
+        homePresenter.selectDuration();
+
+        verify(homeView).showDurationOptionDialog();
+    }
+
+    @Test
+    public void checkValidCarNumberPlateAndDuration_emptyCarNumberPlate_showCarNumberPlateErrMsgAndReturnFalse() {
+        // Empty carNumberPlate
+        String carNumberPlate = "";
+        int duration = 1;
+        boolean valid;
+
+        valid = homePresenter.checkValidCarNumberPlateAndDuration(carNumberPlate, duration);
+
+        verify(homeView).showCarNumberPlateErrMsg();
+
+        assertThat(false, is(valid));
+    }
+
+    @Test
+    public void checkValidCarNumberPlateAndDuration_durationIsZero_showDurationErrMsgAndReturnFalse() {
+        String carNumberPlate = "QWE1234";
+        int duration = 0;
+        boolean valid;
+
+        valid = homePresenter.checkValidCarNumberPlateAndDuration(carNumberPlate, duration);
+
+        verify(homeView).showDurationErrMsg();
+
+        assertThat(false, is(valid));
+    }
+
+    @Test
+    public void checkValidCarNumberPlateAndDuration_filledCarNumberPlateAndDuration_returnTrue() {
+        String carNumberPlate = "QWE1234";
+        int duration = 1;
+        boolean valid;
+
+        valid = homePresenter.checkValidCarNumberPlateAndDuration(carNumberPlate, duration);
+
+        assertThat(true, is(valid));
+    }
+
+    @Test
+    public void determinePayment_oneHour_returnZeroPointFourFive() {
+        int duration = 1;
+        double payment;
+
+        payment = homePresenter.determinePayment(duration);
+
+        assertThat(0.45, is(payment));
+    }
+
+    @Test
+    public void determinePayment_oneDay_returnThreePointFive() {
+        int duration = 9;
+        double payment;
+
+        payment = homePresenter.determinePayment(duration);
+
+        assertThat(3.50, is(payment));
+    }
+
+    @Test
+    public void determinePayment_zero_returnZero() {
+        int duration = 0;
+        double payment;
+
+        payment = homePresenter.determinePayment(duration);
+
+        assertThat(0.0, is(payment));
     }
 }

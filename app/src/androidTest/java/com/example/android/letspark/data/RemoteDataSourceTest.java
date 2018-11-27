@@ -1,9 +1,9 @@
 package com.example.android.letspark.data;
 
-import android.support.test.filters.LargeTest;
-import android.support.test.runner.AndroidJUnit4;
-
 import org.junit.runner.RunWith;
+
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.LargeTest;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)

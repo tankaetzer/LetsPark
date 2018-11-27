@@ -47,11 +47,15 @@ public interface HomeContract {
 
         void setRateAndDefaultDistanceDuration(double rate);
 
-        void showAddRemoveCarUi(String uid);
+        void showAddRemoveCarUi();
 
         void showSelectedCar();
 
         void showDurationOptionDialog();
+
+        void showCarNumberPlateErrMsg();
+
+        void showDurationErrMsg();
     }
 
     interface Presenter extends BasePresenter {
@@ -86,5 +90,11 @@ public interface HomeContract {
         void result(int requestCode, int resultCode);
 
         void selectDuration();
+
+        void pay(String carNumberPlate, int duration);
+
+        boolean checkValidCarNumberPlateAndDuration(String carNumberPlate, int duration);
+
+        double determinePayment(int duration);
     }
 }

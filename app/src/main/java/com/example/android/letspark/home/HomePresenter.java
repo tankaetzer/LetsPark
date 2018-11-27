@@ -1,7 +1,7 @@
 package com.example.android.letspark.home;
 
-import com.example.android.letspark.data.model.EmptyParkingBay;
 import com.example.android.letspark.data.DataSource;
+import com.example.android.letspark.data.model.EmptyParkingBay;
 import com.example.android.letspark.service.Service;
 import com.google.android.gms.location.LocationSettingsResponse;
 
@@ -29,21 +29,20 @@ public class HomePresenter implements HomeContract.Presenter {
 
     private Service.ConnectivityService connectivityService;
 
-    private String uid;
+    private Service.SharedPreferenceService sharedPreferenceService;
 
-    public HomePresenter(String uid,
-                         DataSource dataSource,
+    public HomePresenter(DataSource dataSource,
                          HomeContract.View homeView,
                          Service.LocationService locationService,
                          Service.DistanceMatrixService distanceMatrixService,
-                         Service.ConnectivityService connectivityService) {
-        this.uid = uid;
+                         Service.ConnectivityService connectivityService,
+                         Service.SharedPreferenceService sharedPreferenceService) {
         this.dataSource = checkNotNull(dataSource);
         this.homeView = checkNotNull(homeView);
         this.locationService = checkNotNull(locationService);
         this.distanceMatrixService = checkNotNull(distanceMatrixService);
         this.connectivityService = checkNotNull(connectivityService);
-
+        this.sharedPreferenceService = checkNotNull(sharedPreferenceService);
         homeView.setPresenter(this);
     }
 
@@ -221,7 +220,7 @@ public class HomePresenter implements HomeContract.Presenter {
 
     @Override
     public void selectCar() {
-        homeView.showAddRemoveCarUi(uid);
+        homeView.showAddRemoveCarUi();
     }
 
     @Override
@@ -238,4 +237,49 @@ public class HomePresenter implements HomeContract.Presenter {
     public void selectDuration() {
         homeView.showDurationOptionDialog();
     }
+
+    @Override
+    public void pay(final String carNumberPlate, final int duration) {
+        boolean carNumberPlateAndDurationValid =
+                checkValidCarNumberPlateAndDuration(carNumberPlate, duration);
+
+        final double payment = determinePayment(duration);
+
+        //TODO: delete once payment feature is done
+        if (carNumberPlateAndDurationValid) {
+            sharedPreferenceService.getCurrentUserUid(new Service
+                    .SharedPreferenceService.GetCurrentUserUidCallback() {
+                @Override
+                public void onGetUid(String uid) {
+                    dataSource.writeNewTransaction(uid, carNumberPlate, duration, payment);
+                }
+            });
+        }
+    }
+
+    @Override
+    public boolean checkValidCarNumberPlateAndDuration(String carNumberPlate, int duration) {
+        if (carNumberPlate.isEmpty()) {
+            homeView.showCarNumberPlateErrMsg();
+            return false;
+        } else if (duration == 0) {
+            homeView.showDurationErrMsg();
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    public double determinePayment(int duration) {
+        if (duration >= 1 && duration <= 4) {
+            return duration * 0.45;
+        } else if (duration == 9) {
+            return 3.50;
+        } else {
+            return 0;
+        }
+    }
+
+
 }

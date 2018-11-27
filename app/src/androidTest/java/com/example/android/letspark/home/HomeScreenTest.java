@@ -3,10 +3,6 @@ package com.example.android.letspark.home;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject;
@@ -18,6 +14,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.rule.ActivityTestRule;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -35,8 +36,7 @@ public class HomeScreenTest {
     private static final int LAUNCH_TIMEOUT = 5000;
 
     @Rule
-    public ActivityTestRule<HomeActivity> activityRule
-            = new ActivityTestRule<>(HomeActivity.class);
+    public ActivityTestRule<HomeActivity> activityRule = new ActivityTestRule<>(HomeActivity.class);
 
     private UiDevice device;
 
@@ -55,7 +55,7 @@ public class HomeScreenTest {
                 LAUNCH_TIMEOUT);
 
         // Launch the app
-        Context context = InstrumentationRegistry.getContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getContext();
         Intent intent = context.getPackageManager()
                 .getLaunchIntentForPackage(BASIC_SAMPLE_PACKAGE);
 
@@ -93,7 +93,8 @@ public class HomeScreenTest {
         // Opens the notification shade and find "Location" button.
         device.openNotification();
         device.wait(Until.hasObject(By.descContains("Location")), LAUNCH_TIMEOUT);
-        UiObject location = device.findObject(new UiSelector().resourceId("com.android.systemui:id/qs_button_1"));
+        UiObject location = device.findObject(new UiSelector()
+                .resourceId("com.android.systemui:id/qs_button_1"));
 
         if (location.getContentDescription().equals("Location is disabled.")) {
             // Close notification.
@@ -104,7 +105,8 @@ public class HomeScreenTest {
             assertEquals("For best results, turn on device location, which uses Google’s " +
                     "location service. ", location_dialog.getText());
 
-            UiObject button_ok = device.findObject(new UiSelector().packageName("com.google.android.gms")
+            UiObject button_ok = device.findObject(new UiSelector()
+                    .packageName("com.google.android.gms")
                     .resourceId("android:id/button1"));
             button_ok.click();
         }

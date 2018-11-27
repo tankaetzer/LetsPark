@@ -40,6 +40,5 @@
             app:layout_anchor="@id/contentFrame"
             app:layout_anchorGravity="bottom|center"
             app:srcCompat="@drawable/ic_add_white" />
-
     </android.support.design.widget.CoordinatorLayout>
 </LinearLayout>

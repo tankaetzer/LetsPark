@@ -2,13 +2,14 @@ package com.example.android.letspark.service;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
-import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
@@ -20,7 +21,7 @@ import static org.mockito.Mockito.verify;
  * <p>
  * Please disable WiFi and Mobile data before running this test.
  */
-@SmallTest
+@MediumTest
 @RunWith(AndroidJUnit4.class)
 public class ConnectivityServiceInternetDisabledTest {
 
@@ -29,8 +30,11 @@ public class ConnectivityServiceInternetDisabledTest {
     @Before
     public void setup() {
 
-        ConnectivityManager connectivityManager = (ConnectivityManager) InstrumentationRegistry
-                .getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) InstrumentationRegistry
+                .getInstrumentation()
+                .getContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
 
         connectivityService = new ConnectivityService(connectivityManager);
     }

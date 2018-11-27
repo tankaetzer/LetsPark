@@ -69,13 +69,19 @@ public class HomeFragment extends Fragment implements HomeContract.View {
 
     private View constraintLayout_distance_price_duration;
 
-    private String carNumberPlate;
+    private String carNumberPlate = "";
 
     private RadioButton radio_one_hour;
 
     private RadioButton radio_two_hours;
 
-    private RadioButton radio_thirty_days;
+    private RadioButton radio_three_hours;
+
+    private RadioButton radio_four_hours;
+
+    private RadioButton radio_one_day;
+
+    private int duration = 0;
 
     public HomeFragment() {
         // Require empty constructor so it can be instantiated when restoring Activity's state.
@@ -124,12 +130,12 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         progressBar = root.findViewById(R.id.progressBar);
 
         // Set up floating action button
-        FloatingActionButton fab =
-                getActivity().findViewById(R.id.fab_pay);
+        FloatingActionButton fab = getActivity().findViewById(R.id.fab_pay);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                homePresenter.pay(carNumberPlate, duration);
             }
         });
 
@@ -155,11 +161,6 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         homePresenter.createLocationCallback();
@@ -180,14 +181,12 @@ public class HomeFragment extends Fragment implements HomeContract.View {
             } else {
                 text_select_car.setText(R.string.home_select_car);
                 text_select_car.setTextColor(getResources().getColor(R.color.colorHint));
+                carNumberPlate = "";
             }
+            homePresenter.result(requestCode, resultCode);
         }
-        homePresenter.result(requestCode, resultCode);
     }
 
-    /**
-     * TODO: Refactor presentation logic to presenter class.
-     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -218,7 +217,8 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         }
 
         // TODO: To be delete once search parking bays feature is complete.
-        getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(3.721885, 103.120707), 21));
+        getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(3.721885,
+                103.120707), 21));
 
         getMap().setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -380,9 +380,8 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     }
 
     @Override
-    public void showAddRemoveCarUi(String uid) {
+    public void showAddRemoveCarUi() {
         Intent intent = new Intent(getContext(), AddRemoveCarActivity.class);
-        intent.putExtra(AddRemoveCarActivity.EXTRA_UID, uid);
         startActivityForResult(intent, REQUEST_ADD_REMOVE_CAR);
     }
 
@@ -405,7 +404,9 @@ public class HomeFragment extends Fragment implements HomeContract.View {
 
         radio_one_hour = dialogView.findViewById(R.id.radio_one_hour);
         radio_two_hours = dialogView.findViewById(R.id.radio_two_hours);
-        radio_thirty_days = dialogView.findViewById(R.id.radio_thirty_days);
+        radio_three_hours = dialogView.findViewById(R.id.radio_three_hours);
+        radio_four_hours = dialogView.findViewById(R.id.radio_four_hours);
+        radio_one_day = dialogView.findViewById(R.id.radio_one_day);
 
         builder.setView(dialogView)
                 // Add action buttons
@@ -415,12 +416,24 @@ public class HomeFragment extends Fragment implements HomeContract.View {
                     public void onClick(DialogInterface dialog, int which) {
                         if (radio_one_hour.isChecked()) {
                             text_select_duration.setText(R.string.home_radio_one_hour);
+                            duration = 1;
                         } else if (radio_two_hours.isChecked()) {
                             text_select_duration.setText(R.string.home_radio_two_hours);
-                        } else if (radio_thirty_days.isChecked()) {
-                            text_select_duration.setText(R.string.home_radio_thirty_days);
+                            duration = 2;
+                        } else if (radio_three_hours.isChecked()) {
+                            text_select_duration.setText(R.string.home_radio_three_hours);
+                            duration = 3;
+                        } else if (radio_four_hours.isChecked()) {
+                            text_select_duration.setText(R.string.home_radio_four_hours);
+                            duration = 4;
+                        } else if (radio_one_day.isChecked()) {
+                            text_select_duration.setText(R.string.home_radio_one_day);
+                            duration = 9;
+                        } else {
+                            duration = 0;
                         }
-                        text_select_duration.setTextColor(getResources().getColor(R.color.colorPrimary));
+                        text_select_duration
+                                .setTextColor(getResources().getColor(R.color.colorPrimary));
                     }
                 })
                 .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -431,6 +444,16 @@ public class HomeFragment extends Fragment implements HomeContract.View {
                 .create();
 
         builder.show();
+    }
+
+    @Override
+    public void showCarNumberPlateErrMsg() {
+        showMessage(getString(R.string.home_empty_car_number_plate_error));
+    }
+
+    @Override
+    public void showDurationErrMsg() {
+        showMessage(getString(R.string.home_empty_duration_error));
     }
 
     private void showMessage(String message) {

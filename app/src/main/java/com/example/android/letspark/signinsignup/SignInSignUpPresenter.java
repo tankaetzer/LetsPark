@@ -16,16 +16,20 @@ public class SignInSignUpPresenter implements SignInSignUpContract.Presenter {
 
     private Service.ConnectivityService connectivityService;
 
+    private Service.SharedPreferenceService sharedPreferenceService;
+
     private DataSource dataSource;
 
     public SignInSignUpPresenter(SignInSignUpContract.View signInSignUpView,
                                  Service.FirebaseAuthenticationService firebaseAuthenticationService,
                                  Service.ConnectivityService connectivityService,
-                                 DataSource dataSource) {
+                                 DataSource dataSource,
+                                 Service.SharedPreferenceService sharedPreferenceService) {
         this.signInSignUpView = checkNotNull(signInSignUpView);
         this.firebaseAuthenticationService = checkNotNull(firebaseAuthenticationService);
         this.connectivityService = checkNotNull(connectivityService);
         this.dataSource = checkNotNull(dataSource);
+        this.sharedPreferenceService = checkNotNull(sharedPreferenceService);
         signInSignUpView.setPresenter(this);
     }
 
@@ -41,9 +45,9 @@ public class SignInSignUpPresenter implements SignInSignUpContract.Presenter {
                     new Service.FirebaseAuthenticationService.GetCurrentUserResponseCallback() {
                         @Override
                         public void onResultOk(String email, String uid) {
-                            // TODO: Complete the test using Espresso Idling Resource
                             signInSignUpView.showHomeUi(uid);
                             dataSource.writeNewUser(uid, email);
+                            sharedPreferenceService.setCurrentUserUid(uid);
                         }
 
                         @Override

@@ -17,23 +17,37 @@
 
         <RadioButton
             android:id="@+id/radio_one_hour"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/home_radio_one_hour" />
 
         <RadioButton
             android:id="@+id/radio_two_hours"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/home_radio_two_hours" />
 
         <RadioButton
-            android:id="@+id/radio_thirty_days"
-            android:layout_width="match_parent"
+            android:id="@+id/radio_three_hours"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/home_radio_thirty_days" />
+            android:text="@string/home_radio_three_hours" />
+
+        <RadioButton
+            android:id="@+id/radio_four_hours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/home_radio_four_hours" />
+
+        <RadioButton
+            android:id="@+id/radio_one_day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/home_radio_one_day" />
     </RadioGroup>
 </android.support.constraint.ConstraintLayout>

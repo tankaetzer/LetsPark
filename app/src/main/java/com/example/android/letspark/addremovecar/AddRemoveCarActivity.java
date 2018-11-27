@@ -8,18 +8,30 @@ import android.support.v7.widget.Toolbar;
 import com.example.android.letspark.LetsParkApp;
 import com.example.android.letspark.R;
 import com.example.android.letspark.data.RemoteDataSource;
+import com.example.android.letspark.idlingresource.SimpleIdlingResource;
+import com.example.android.letspark.service.SharedPreferenceService;
 import com.example.android.letspark.utility.ActivityUtils;
 
 import javax.inject.Inject;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import androidx.test.espresso.IdlingResource;
 
 public class AddRemoveCarActivity extends AppCompatActivity {
 
     public static final int REQUEST_ADD_REMOVE_CAR = 5;
 
-    public static String EXTRA_UID = "QWERTYUIOPASDFGHJKLZXCVBNM";
+    @Inject
+    public RemoteDataSource remoteDataSource;
 
     @Inject
-    RemoteDataSource remoteDataSource;
+    public SharedPreferenceService sharedPreferenceService;
+
+    // The Idling Resource which will be null in production.
+    @Nullable
+    private SimpleIdlingResource idlingResource;
 
     private AddRemoveCarFragment addRemoveCarFragment;
 
@@ -32,9 +44,10 @@ public class AddRemoveCarActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
-        ab.setTitle("Car");
+        ab.setTitle(R.string.title_activity_car);
 
-        String uid = getIntent().getStringExtra(EXTRA_UID);
+        // Enable the Up button.
+        ab.setDisplayHomeAsUpEnabled(true);
 
         addRemoveCarFragment = (AddRemoveCarFragment) getSupportFragmentManager().findFragmentById
                 (R.id.contentFrame);
@@ -52,7 +65,18 @@ public class AddRemoveCarActivity extends AppCompatActivity {
 
         // TODO: Improve code by injecting dependency using Dagger 2
         // Create the presenter.
-        new AddRemoveCarPresenter(uid, addRemoveCarFragment,
-                remoteDataSource);
+        new AddRemoveCarPresenter(addRemoveCarFragment, remoteDataSource, sharedPreferenceService);
+    }
+
+    /**
+     * Only called from test, creates and returns a new {@link SimpleIdlingResource}.
+     */
+    @NonNull
+    @VisibleForTesting
+    public IdlingResource getIdlingResource() {
+        if (idlingResource == null) {
+            idlingResource = new SimpleIdlingResource();
+        }
+        return idlingResource;
     }
 }

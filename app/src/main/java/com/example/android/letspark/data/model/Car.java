@@ -10,7 +10,7 @@ public class Car {
     private String key;
 
     public Car() {
-        // Default constructor required for calls to DataSnapshot.getValue(Post.class).
+        // Default constructor required for calls to DataSnapshot.getValue(Car.class).
     }
 
     public Car(String carNumberPlate, String key) {

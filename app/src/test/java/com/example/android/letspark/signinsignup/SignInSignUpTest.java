@@ -1,11 +1,10 @@
 package com.example.android.letspark.signinsignup;
 
-import android.test.suitebuilder.annotation.SmallTest;
-
 import com.example.android.letspark.data.RemoteDataSource;
 import com.example.android.letspark.service.ConnectivityService;
 import com.example.android.letspark.service.FirebaseAuthenticationService;
 import com.example.android.letspark.service.Service;
+import com.example.android.letspark.service.SharedPreferenceService;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +15,9 @@ import org.mockito.MockitoAnnotations;
 
 import static org.mockito.Mockito.verify;
 
-@SmallTest
+/**
+ * Unit tests for the implementation of SignInSignUpPresenter.
+ */
 public class SignInSignUpTest {
 
     @Mock
@@ -31,6 +32,9 @@ public class SignInSignUpTest {
     @Mock
     private RemoteDataSource remoteDataSource;
 
+    @Mock
+    private SharedPreferenceService sharedPreferenceService;
+
     @Captor
     private ArgumentCaptor<Service.ConnectivityService.GetConnectivityStatusResponseCallback>
             GetConnectivityStatusResponseCallbackArgumentCaptor;
@@ -43,14 +47,16 @@ public class SignInSignUpTest {
         MockitoAnnotations.initMocks(this);
 
         signInSignUpPresenter = new SignInSignUpPresenter(signInSignUpView,
-                firebaseAuthenticationService, connectivityService, remoteDataSource);
+                firebaseAuthenticationService, connectivityService, remoteDataSource,
+                sharedPreferenceService);
     }
 
     @Test
     public void createPresenter_setsThePresenterToView() {
         // Get a reference to the class under test.
         signInSignUpPresenter = new SignInSignUpPresenter(signInSignUpView,
-                firebaseAuthenticationService, connectivityService, remoteDataSource);
+                firebaseAuthenticationService, connectivityService, remoteDataSource,
+                sharedPreferenceService);
 
         // Then the presenter is set to the view.
         verify(signInSignUpView).setPresenter(signInSignUpPresenter);
@@ -83,4 +89,15 @@ public class SignInSignUpTest {
         // Check whether showConnectivityErrMsg is called.
         verify(signInSignUpView).showConnectivityErrMsg();
     }
+
+    @Test
+    public void start() {
+        signInSignUpPresenter.start();
+
+        verify(signInSignUpView).createSignInIntent();
+    }
+
+
+
+
 }

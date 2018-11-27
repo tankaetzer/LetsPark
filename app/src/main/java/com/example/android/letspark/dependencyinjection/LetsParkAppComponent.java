@@ -2,11 +2,13 @@ package com.example.android.letspark.dependencyinjection;
 
 import com.example.android.letspark.addremovecar.AddRemoveCarActivity;
 import com.example.android.letspark.data.RemoteDataSourceModule;
+import com.example.android.letspark.history.HistoryActivity;
 import com.example.android.letspark.home.HomeActivity;
 import com.example.android.letspark.service.ConnectivityServiceModule;
 import com.example.android.letspark.service.DistanceMatrixServiceModule;
 import com.example.android.letspark.service.FirebaseAuthenticationModule;
 import com.example.android.letspark.service.LocationServiceModule;
+import com.example.android.letspark.service.SharedPreferenceModule;
 import com.example.android.letspark.signinsignup.SignInSignUpActivity;
 
 import dagger.Component;
@@ -17,7 +19,7 @@ import dagger.Component;
  */
 @Component(modules = {LocationServiceModule.class, RemoteDataSourceModule.class,
         DistanceMatrixServiceModule.class, ConnectivityServiceModule.class,
-        FirebaseAuthenticationModule.class})
+        FirebaseAuthenticationModule.class, SharedPreferenceModule.class})
 @LetsParkAppScope
 public interface LetsParkAppComponent {
     void inject(HomeActivity homeActivity);
@@ -25,4 +27,6 @@ public interface LetsParkAppComponent {
     void inject(SignInSignUpActivity signInSignUpActivity);
 
     void inject(AddRemoveCarActivity addRemoveCarActivity);
+
+    void inject(HistoryActivity historyActivity);
 }

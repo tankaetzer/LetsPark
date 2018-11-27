@@ -65,6 +65,7 @@ public class SignInSignUpFragment extends Fragment implements SignInSignUpContra
         List<AuthUI.IdpConfig> providers = Arrays.asList(
                 new AuthUI.IdpConfig.EmailBuilder().build());
 
+
         // Create and launch sign-in intent
         startActivityForResult(AuthUI.getInstance()
                         .createSignInIntentBuilder()
@@ -93,7 +94,6 @@ public class SignInSignUpFragment extends Fragment implements SignInSignUpContra
     @Override
     public void showHomeUi(String uid) {
         Intent intent = new Intent(getContext(), HomeActivity.class);
-        intent.putExtra(HomeActivity.EXTRA_UID, uid);
         startActivity(intent);
     }
 }

@@ -1,10 +1,10 @@
 package com.example.android.letspark.addremovecar;
 
-import android.test.suitebuilder.annotation.SmallTest;
-
-import com.example.android.letspark.data.model.Car;
 import com.example.android.letspark.data.DataSource;
 import com.example.android.letspark.data.RemoteDataSource;
+import com.example.android.letspark.data.model.Car;
+import com.example.android.letspark.service.Service;
+import com.example.android.letspark.service.SharedPreferenceService;
 import com.google.common.collect.Lists;
 
 import org.junit.Before;
@@ -25,20 +25,34 @@ import static org.mockito.Mockito.verify;
 /**
  * Unit tests for the implementation of AddRemoveCarPresenter.
  */
-@SmallTest
 public class AddRemoveCarPresenterTest {
 
     private static List<Car> carList;
+
     @Mock
     private AddRemoveCarContract.View addRemoveCarView;
+
     @Mock
     private RemoteDataSource remoteDataSource;
+
+    @Mock
+    private SharedPreferenceService sharedPreferenceService;
+
     @Captor
     private ArgumentCaptor<DataSource.LoadUserCarsCallBack>
             loadUserCarsCallBackArgumentCaptor;
+
+    @Captor
+    private ArgumentCaptor<Service.SharedPreferenceService.GetCurrentUserUidCallback>
+            getCurrentUserUidCallbackArgumentCaptor;
+
+
     private AddRemoveCarPresenter addRemoveCarPresenter;
+
     private String uid = "xxxxxxxx";
+
     private String carNumberPlate = "QWE1234";
+
     private String errMsg = "error";
 
     @Before
@@ -49,15 +63,15 @@ public class AddRemoveCarPresenterTest {
         carList = Lists.newArrayList(new Car("WWW1234", "WW"),
                 new Car("ASD", "AS"), new Car("ZXC", "ZX"));
 
-        addRemoveCarPresenter = new AddRemoveCarPresenter(uid, addRemoveCarView,
-                remoteDataSource);
+        addRemoveCarPresenter = new AddRemoveCarPresenter(addRemoveCarView, remoteDataSource,
+                sharedPreferenceService);
     }
 
     @Test
     public void createPresenter_setsThePresenterToView() {
         // Get a reference to the class under test.
-        addRemoveCarPresenter = new AddRemoveCarPresenter(uid, addRemoveCarView,
-                remoteDataSource);
+        addRemoveCarPresenter = new AddRemoveCarPresenter(addRemoveCarView, remoteDataSource,
+                sharedPreferenceService);
 
         // Then the presenter is set to the view.
         verify(addRemoveCarView).setPresenter(addRemoveCarPresenter);
@@ -65,12 +79,17 @@ public class AddRemoveCarPresenterTest {
 
     @Test
     public void addCar_emptyCarNumberPlate_showEmptyCarErr() {
-        // Empty car number plate
+        // Empty car number plate.
         String carNumberPlate = "";
 
         addRemoveCarPresenter.addCar(carNumberPlate, carList);
 
-        // Verify showEmptyCarErr is called
+        verify(sharedPreferenceService)
+                .getCurrentUserUid(getCurrentUserUidCallbackArgumentCaptor.capture());
+
+        getCurrentUserUidCallbackArgumentCaptor.getValue().onGetUid(uid);
+
+        // Verify showEmptyCarErr is called.
         verify(addRemoveCarView).showEmptyCarErr();
     }
 
@@ -81,13 +100,23 @@ public class AddRemoveCarPresenterTest {
 
         addRemoveCarPresenter.addCar(carNumberPlate, carList);
 
-        // Verify showEmptyCarErr is called
+        verify(sharedPreferenceService)
+                .getCurrentUserUid(getCurrentUserUidCallbackArgumentCaptor.capture());
+
+        getCurrentUserUidCallbackArgumentCaptor.getValue().onGetUid(uid);
+
+        // Verify showEmptyCarErr is called.
         verify(addRemoveCarView).showCarExistErrMsg();
     }
 
     @Test
     public void addCar_onUserCarsLoaded_hideProgressBarHideNoCarsViewShowCarListShowSuccessfullySavedCarMsg() {
         addRemoveCarPresenter.addCar(carNumberPlate, carList);
+
+        verify(sharedPreferenceService)
+                .getCurrentUserUid(getCurrentUserUidCallbackArgumentCaptor.capture());
+
+        getCurrentUserUidCallbackArgumentCaptor.getValue().onGetUid(uid);
 
         verify(addRemoveCarView).showProgressBar(true);
 
@@ -106,6 +135,11 @@ public class AddRemoveCarPresenterTest {
     public void addCar_onCancelled_showProgressBarAndShowRemoteDbErrMsg() {
         addRemoveCarPresenter.addCar(carNumberPlate, carList);
 
+        verify(sharedPreferenceService)
+                .getCurrentUserUid(getCurrentUserUidCallbackArgumentCaptor.capture());
+
+        getCurrentUserUidCallbackArgumentCaptor.getValue().onGetUid(uid);
+
         verify(addRemoveCarView).showProgressBar(true);
 
         // Callback is captured and invoked with stubbed emptyParkingBay.
@@ -121,6 +155,11 @@ public class AddRemoveCarPresenterTest {
     public void loadUserCars_onUserCarsLoaded_showProgressBarThenHideProgressBar() {
         addRemoveCarPresenter.loadUserCars();
 
+        verify(sharedPreferenceService)
+                .getCurrentUserUid(getCurrentUserUidCallbackArgumentCaptor.capture());
+
+        getCurrentUserUidCallbackArgumentCaptor.getValue().onGetUid(uid);
+
         verify(addRemoveCarView).showProgressBar(true);
         verify(remoteDataSource).getUserCars(anyString(),
                 loadUserCarsCallBackArgumentCaptor.capture());
@@ -133,6 +172,11 @@ public class AddRemoveCarPresenterTest {
     @Test
     public void loadUserCars_onCancelled_showRemoteDbErrMsg() {
         addRemoveCarPresenter.loadUserCars();
+
+        verify(sharedPreferenceService)
+                .getCurrentUserUid(getCurrentUserUidCallbackArgumentCaptor.capture());
+
+        getCurrentUserUidCallbackArgumentCaptor.getValue().onGetUid(uid);
 
         verify(addRemoveCarView).showProgressBar(true);
         verify(remoteDataSource).getUserCars(anyString(),
@@ -150,6 +194,11 @@ public class AddRemoveCarPresenterTest {
 
         addRemoveCarPresenter.removeCar(car);
 
+        verify(sharedPreferenceService)
+                .getCurrentUserUid(getCurrentUserUidCallbackArgumentCaptor.capture());
+
+        getCurrentUserUidCallbackArgumentCaptor.getValue().onGetUid(uid);
+
         verify(addRemoveCarView).showProgressBar(true);
         verify(remoteDataSource).deleteCar(anyString(), anyString(),
                 loadUserCarsCallBackArgumentCaptor.capture());
@@ -163,6 +212,11 @@ public class AddRemoveCarPresenterTest {
         Car car = new Car("WWW1234", "XXX");
 
         addRemoveCarPresenter.removeCar(car);
+
+        verify(sharedPreferenceService)
+                .getCurrentUserUid(getCurrentUserUidCallbackArgumentCaptor.capture());
+
+        getCurrentUserUidCallbackArgumentCaptor.getValue().onGetUid(uid);
 
         verify(addRemoveCarView).showProgressBar(true);
         verify(remoteDataSource).deleteCar(anyString(), anyString(),

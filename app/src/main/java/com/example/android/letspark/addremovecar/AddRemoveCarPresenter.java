@@ -1,8 +1,10 @@
 package com.example.android.letspark.addremovecar;
 
-import com.example.android.letspark.data.model.Car;
 import com.example.android.letspark.data.DataSource;
 import com.example.android.letspark.data.RemoteDataSource;
+import com.example.android.letspark.data.model.Car;
+import com.example.android.letspark.service.Service;
+import com.example.android.letspark.service.SharedPreferenceService;
 
 import java.util.List;
 
@@ -14,13 +16,14 @@ public class AddRemoveCarPresenter implements AddRemoveCarContract.Presenter {
 
     private RemoteDataSource remoteDataSource;
 
-    private String uid;
+    private SharedPreferenceService sharedPreferenceService;
 
-    public AddRemoveCarPresenter(String uid, AddRemoveCarContract.View addRemoveCarView,
-                                 RemoteDataSource remoteDataSource) {
-        this.uid = uid;
+    public AddRemoveCarPresenter(AddRemoveCarContract.View addRemoveCarView,
+                                 RemoteDataSource remoteDataSource,
+                                 SharedPreferenceService sharedPreferenceService) {
         this.addRemoveCarView = checkNotNull(addRemoveCarView);
         this.remoteDataSource = checkNotNull(remoteDataSource);
+        this.sharedPreferenceService = checkNotNull(sharedPreferenceService);
         addRemoveCarView.setPresenter(this);
     }
 
@@ -30,38 +33,48 @@ public class AddRemoveCarPresenter implements AddRemoveCarContract.Presenter {
     }
 
     @Override
-    public void addCar(String carNumberPlate, List<Car> carList) {
-        if (carNumberPlate.isEmpty()) {
-            addRemoveCarView.showEmptyCarErr();
-        } else if (isCarExist(carNumberPlate, carList)) {
-            addRemoveCarView.showCarExistErrMsg();
-        } else {
-            addRemoveCarView.showProgressBar(true);
-            remoteDataSource.writeCarNumberPlate(
-                    carNumberPlate.toUpperCase(), uid,
-                    new DataSource.LoadUserCarsCallBack() {
-                        @Override
-                        public void onUserCarsLoaded(List<Car> carList) {
-                            addRemoveCarView.showProgressBar(false);
-                            addRemoveCarView.showNoCarsView(false);
-                            addRemoveCarView.showCarsAfterAddingOrRemoving(carList);
-                            addRemoveCarView.showSuccessfullySavedCarMsg();
-                        }
+    public void addCar(final String carNumberPlate, final List<Car> carList) {
+        sharedPreferenceService.getCurrentUserUid(new Service
+                .SharedPreferenceService.GetCurrentUserUidCallback() {
+            @Override
+            public void onGetUid(String uid) {
+                if (carNumberPlate.isEmpty()) {
+                    addRemoveCarView.showEmptyCarErr();
+                } else if (isCarExist(carNumberPlate, carList)) {
+                    addRemoveCarView.showCarExistErrMsg();
+                } else {
+                    addRemoveCarView.showProgressBar(true);
+                    remoteDataSource.writeCarNumberPlate(
+                            carNumberPlate.toUpperCase(), uid,
+                            new DataSource.LoadUserCarsCallBack() {
+                                @Override
+                                public void onUserCarsLoaded(List<Car> carList) {
+                                    addRemoveCarView.showProgressBar(false);
+                                    addRemoveCarView.showNoCarsView(false);
+                                    addRemoveCarView.showCarsAfterAddingOrRemoving(carList);
+                                    addRemoveCarView.showSuccessfullySavedCarMsg();
+                                }
 
-                        @Override
-                        public void onCancelled(String errMsg) {
-                            addRemoveCarView.showProgressBar(false);
-                            addRemoveCarView.showRemoteDbErrMsg(errMsg);
-                        }
-                    });
-        }
+                                @Override
+                                public void onCancelled(String errMsg) {
+                                    addRemoveCarView.showProgressBar(false);
+                                    addRemoveCarView.showRemoteDbErrMsg(errMsg);
+                                }
+                            });
+                }
+            }
+        });
     }
 
     @Override
     public void loadUserCars() {
         addRemoveCarView.showProgressBar(true);
-        remoteDataSource.getUserCars(uid,
-                new DataSource.LoadUserCarsCallBack() {
+
+        sharedPreferenceService.getCurrentUserUid(new Service
+                .SharedPreferenceService.GetCurrentUserUidCallback() {
+            @Override
+            public void onGetUid(String uid) {
+                remoteDataSource.getUserCars(uid, new DataSource.LoadUserCarsCallBack() {
                     @Override
                     public void onUserCarsLoaded(List<Car> carList) {
                         addRemoveCarView.showProgressBar(false);
@@ -74,26 +87,35 @@ public class AddRemoveCarPresenter implements AddRemoveCarContract.Presenter {
                         addRemoveCarView.showRemoteDbErrMsg(errMsg);
                     }
                 });
+            }
+        });
     }
 
     @Override
-    public void removeCar(Car currentCar) {
+    public void removeCar(final Car currentCar) {
         addRemoveCarView.showProgressBar(true);
-        remoteDataSource.deleteCar(uid, currentCar.getKey(),
-                new DataSource.LoadUserCarsCallBack() {
-                    @Override
-                    public void onUserCarsLoaded(List<Car> carList) {
-                        addRemoveCarView.showProgressBar(false);
-                        processAndShowCars(carList);
-                        addRemoveCarView.showSuccessfullyDeletedCarMsg();
-                    }
 
-                    @Override
-                    public void onCancelled(String errMsg) {
-                        addRemoveCarView.showProgressBar(false);
-                        addRemoveCarView.showRemoteDbErrMsg(errMsg);
-                    }
-                });
+        sharedPreferenceService.getCurrentUserUid(new Service
+                .SharedPreferenceService.GetCurrentUserUidCallback() {
+            @Override
+            public void onGetUid(String uid) {
+                remoteDataSource.deleteCar(uid, currentCar.getKey(),
+                        new DataSource.LoadUserCarsCallBack() {
+                            @Override
+                            public void onUserCarsLoaded(List<Car> carList) {
+                                addRemoveCarView.showProgressBar(false);
+                                processAndShowCars(carList);
+                                addRemoveCarView.showSuccessfullyDeletedCarMsg();
+                            }
+
+                            @Override
+                            public void onCancelled(String errMsg) {
+                                addRemoveCarView.showProgressBar(false);
+                                addRemoveCarView.showRemoteDbErrMsg(errMsg);
+                            }
+                        });
+            }
+        });
     }
 
     @Override

@@ -70,4 +70,14 @@ public interface Service {
             void onClickBackButton();
         }
     }
+
+    interface SharedPreferenceService {
+        void setCurrentUserUid(String uid);
+
+        void getCurrentUserUid(GetCurrentUserUidCallback callback);
+
+        interface GetCurrentUserUidCallback {
+            void onGetUid(String uid);
+        }
+    }
 }

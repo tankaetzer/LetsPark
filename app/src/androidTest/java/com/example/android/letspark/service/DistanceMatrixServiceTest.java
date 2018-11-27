@@ -1,13 +1,12 @@
 package com.example.android.letspark.service;
 
-import android.support.test.filters.SmallTest;
-import android.support.test.runner.AndroidJUnit4;
-
 import org.junit.Before;
 import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeUnit;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.MediumTest;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -16,7 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 /**
  * Unit tests for the implementation of DistanceMatrixService.
  */
-@SmallTest
+@MediumTest
 @RunWith(AndroidJUnit4.class)
 public class DistanceMatrixServiceTest {
 
