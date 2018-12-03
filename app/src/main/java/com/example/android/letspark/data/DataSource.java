@@ -1,5 +1,6 @@
 package com.example.android.letspark.data;
 
+import com.example.android.letspark.data.model.ActiveParking;
 import com.example.android.letspark.data.model.Car;
 import com.example.android.letspark.data.model.EmptyParkingBay;
 import com.example.android.letspark.data.model.History;
@@ -21,9 +22,22 @@ public interface DataSource {
 
     void deleteCar(String uid, String key, LoadUserCarsCallBack callBack);
 
-    void writeNewTransaction(String uid, String carNumberPlate, int duration, double payment);
+    void writeNewTransaction(String carNumberPlate, String uid, String location, int duration,
+                             double payment, GetStartTimeCallback callback);
 
     void getUserHistory(String uid, LoadUserHistoriesCallBack callBack);
+
+    void getCurrentUnixTime(GetCurrentUnixTimeCallback callBack);
+
+    void writeNewActiveParking(String uid, String carNumberPlate, String location, long startTime,
+                               long duration, long endTime, WriteActiveParkingCallback callback);
+
+    void getActiveParking(String uid, GetActiveParkingCallback callback);
+
+    void updateTimeLeftTimerRunningEndTime(String uid, long timeLeft, boolean timerRunning,
+                                           UpdateTimeLeftTimerRunningEndTimeCallback callback);
+
+    void updateTimerRunning(String uid, boolean timerRunning, UpdateTimerRunningCallback callback);
 
     interface LoadEmptyParkingBaysCallBack {
         void onEmptyParkingBaysLoaded(List<EmptyParkingBay> emptyParkingBayList);
@@ -41,5 +55,41 @@ public interface DataSource {
         void onUserHistoriesLoaded(List<History> historyList);
 
         void onCancelled(String errMsg);
+    }
+
+    interface GetStartTimeCallback {
+        void onGetStartTime(Long startTime);
+
+        void onCancelled(String errMsg);
+    }
+
+    interface GetCurrentUnixTimeCallback {
+        void onGetCurrentUnixTime(Long currentUnixTime);
+
+        void onCancelled(String errMsg);
+    }
+
+    interface WriteActiveParkingCallback {
+        void onSuccess();
+
+        void onFailure(String errMsg);
+    }
+
+    interface GetActiveParkingCallback {
+        void onGetActiveParking(ActiveParking activeParking);
+
+        void onCancelled(String errMsg);
+    }
+
+    interface UpdateTimeLeftTimerRunningEndTimeCallback {
+        void onSuccess();
+
+        void onFailure(String errMsg);
+    }
+
+    interface UpdateTimerRunningCallback {
+        void onSuccess();
+
+        void onFailure(String errMsg);
     }
 }

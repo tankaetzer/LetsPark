@@ -5,8 +5,8 @@ import android.content.Intent;
 import com.google.android.gms.location.LocationSettingsResponse;
 
 /**
- * Interface for location service, distance matrix service, connectivity service and
- * Firebase authentication service.
+ * Interface for location service, distance matrix service, connectivity service,
+ * Firebase authentication service, SharedPreferenceService and CountDownTimerService.
  */
 public interface Service {
 
@@ -78,6 +78,18 @@ public interface Service {
 
         interface GetCurrentUserUidCallback {
             void onGetUid(String uid);
+        }
+    }
+
+    interface CountDownTimerService {
+        void startService(long timeLeft, GetServiceCallback callback);
+
+        void stopService();
+
+        interface GetServiceCallback {
+            void onTick(long millisUntilFinished);
+
+            void onFinish();
         }
     }
 }

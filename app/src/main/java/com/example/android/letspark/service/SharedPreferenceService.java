@@ -15,6 +15,8 @@ public class SharedPreferenceService implements Service.SharedPreferenceService 
 
     private SharedPreferences.Editor editor;
 
+    private static final String PREF_UID = "UID";
+
     @Inject
     public SharedPreferenceService(SharedPreferences sharedPref, SharedPreferences.Editor editor) {
         this.sharedPref = checkNotNull(sharedPref);
@@ -23,13 +25,13 @@ public class SharedPreferenceService implements Service.SharedPreferenceService 
 
     @Override
     public void setCurrentUserUid(String uid) {
-        editor.putString("uid", uid);
+        editor.putString(PREF_UID, uid);
         editor.commit();
     }
 
     @Override
     public void getCurrentUserUid(GetCurrentUserUidCallback callback) {
-        String uid = sharedPref.getString("uid", "xxxxxx");
+        String uid = sharedPref.getString(PREF_UID, "xxxxxx");
         callback.onGetUid(uid);
     }
 }

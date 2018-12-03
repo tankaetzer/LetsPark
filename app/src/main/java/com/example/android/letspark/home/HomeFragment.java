@@ -15,6 +15,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -22,6 +25,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.example.android.letspark.R;
+import com.example.android.letspark.activeparking.ActiveParkingActivity;
 import com.example.android.letspark.addremovecar.AddRemoveCarActivity;
 import com.example.android.letspark.data.model.EmptyParkingBay;
 import com.example.android.letspark.utility.NumberUtils;
@@ -42,9 +46,6 @@ import static com.example.android.letspark.home.HomeActivity.EXTRA_CAR_NUMBER_PL
 import static com.example.android.letspark.home.HomeActivity.LOCATION_PERMISSION_REQUEST_CODE;
 import static com.example.android.letspark.home.HomeActivity.REQUEST_CHECK_SETTINGS;
 
-/**
- * Display markers on Google map. Each marker is an empty parking bay.
- */
 public class HomeFragment extends Fragment implements HomeContract.View {
 
     private HomeContract.Presenter homePresenter;
@@ -102,6 +103,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_home, container, false);
+        setHasOptionsMenu(true);
 
         // Add Google Map fragment to current fragment.
         if (mapFragment == null) {
@@ -204,6 +206,21 @@ public class HomeFragment extends Fragment implements HomeContract.View {
                 showMessage(getString(R.string.permission_location_denied));
             }
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.home_fragment_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_active_parking:
+                showActiveParkingUi();
+                return true;
+        }
+        return false;
     }
 
     @Override
@@ -454,6 +471,17 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     @Override
     public void showDurationErrMsg() {
         showMessage(getString(R.string.home_empty_duration_error));
+    }
+
+    @Override
+    public void showDbErrMsg(String errMsg) {
+        showMessage(errMsg);
+    }
+
+    @Override
+    public void showActiveParkingUi() {
+        Intent intent = new Intent(getContext(), ActiveParkingActivity.class);
+        startActivity(intent);
     }
 
     private void showMessage(String message) {

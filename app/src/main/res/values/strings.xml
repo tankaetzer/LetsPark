@@ -1,5 +1,12 @@
 <resources>
     <string name="action_ok">OK</string>
+    <string name="active_parking_hours_title">Hours</string>
+    <string name="active_parking_minutes_title">Minutes</string>
+    <string name="active_parking_no_active_parking">No active parking</string>
+    <string name="active_parking_parking_expired">Parking has expired.</string>
+    <string name="active_parking_parking_expiring">Parking will expire in 10 minutes.</string>
+    <string name="active_parking_seconds_title">Seconds</string>
+    <string name="active_parking_title">Active Parking</string>
     <string name="add_remove_car_car">TODO</string>
     <string name="add_remove_car_timer">timer</string>
     <string name="app_name">LetsPark</string>
@@ -39,12 +46,15 @@
     <string name="msg_deleted_car">Deleted car</string>
     <string name="msg_no_car_added_yet">No car added yet</string>
     <string name="msg_saved_car">Saved car</string>
+    <string name="notification_channel_description">Pop on screen</string>
+    <string name="notification_channel_name">Expire Parking Channel</string>
+    <string name="package_id">com.example.android.letspark.activeparking</string>
     <string name="permission_location_denied">Location permission was denied.</string>
     <string name="permission_location_granted">Location permission has been granted.</string>
     <string name="permission_location_never_show_again">Go to Settings and enable the location permission to maximum utilise Google Map features</string>
     <string name="permission_rationale_location">Access to the location service is required to show your current location on the map.</string>
     <string name="preference_file_key">com.example.android.letspark.PREFERENCE_FILE_KEY</string>
-    <string name="title_activity_motorist_home">LetsPark</string>
     <string name="title_activity_car">Car</string>
     <string name="title_activity_history">History</string>
+    <string name="title_activity_motorist_home">LetsPark</string>
 </resources>

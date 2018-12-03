@@ -2,12 +2,17 @@ package com.example.android.letspark.data;
 
 import android.support.annotation.NonNull;
 
+import com.example.android.letspark.data.model.ActiveParking;
 import com.example.android.letspark.data.model.Car;
 import com.example.android.letspark.data.model.EmptyParkingBay;
 import com.example.android.letspark.data.model.History;
+import com.example.android.letspark.data.model.UnixTime;
 import com.example.android.letspark.data.model.User;
 import com.example.android.letspark.idlingresource.SimpleIdlingResource;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -50,26 +55,26 @@ public class RemoteDataSource implements DataSource {
         emptyParkingBayList = new ArrayList<>();
 
         databaseReference.child("empty-parking-bay").addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        emptyParkingBayList.clear();
-                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                            EmptyParkingBay emptyParkingBay
-                                    = postSnapshot.getValue(EmptyParkingBay.class);
-                            emptyParkingBayList.add(new EmptyParkingBay(emptyParkingBay.getLat(),
-                                    emptyParkingBay.getLng(),
-                                    emptyParkingBay.getSnippet(),
-                                    emptyParkingBay.getRate(),
-                                    emptyParkingBay.getVacancy()));
-                        }
-                        callBack.onEmptyParkingBaysLoaded(emptyParkingBayList);
-                    }
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                emptyParkingBayList.clear();
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    EmptyParkingBay emptyParkingBay
+                            = postSnapshot.getValue(EmptyParkingBay.class);
+                    emptyParkingBayList.add(new EmptyParkingBay(emptyParkingBay.getLat(),
+                            emptyParkingBay.getLng(),
+                            emptyParkingBay.getSnippet(),
+                            emptyParkingBay.getRate(),
+                            emptyParkingBay.getVacancy()));
+                }
+                callBack.onEmptyParkingBaysLoaded(emptyParkingBayList);
+            }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        callBack.onDataNotAvailable();
-                    }
-                });
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                callBack.onDataNotAvailable();
+            }
+        });
     }
 
     @Override
@@ -155,16 +160,47 @@ public class RemoteDataSource implements DataSource {
 
     // TODO: delete once payment feature is done
     @Override
-    public void writeNewTransaction(String uid, String carNumberPlate, int duration, double payment) {
+    public void writeNewTransaction(String carNumberPlate, String uid, String location,
+                                    int duration, double payment, final GetStartTimeCallback callback) {
         String key = databaseReference.push().getKey();
         Map<String, Object> value = new HashMap<>();
         value.put("carNumberPlate", carNumberPlate);
-        value.put("location", "Kuantan");
+        value.put("location", location);
         value.put("duration", duration);
         value.put("payment", payment);
         value.put("startTime", ServerValue.TIMESTAMP);
         value.put("transactionId", key);
-        databaseReference.child("history").child(uid).child(key).setValue(value);
+
+        final SimpleIdlingResource idlingResource = new SimpleIdlingResource();
+
+        // The IdlingResource is null in production.
+        if (idlingResource != null) {
+            idlingResource.setIdleState(false);
+        }
+
+        DatabaseReference historyReference = databaseReference.child("history").child(uid).child(key);
+
+        historyReference.setValue(value);
+
+        historyReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                History history = dataSnapshot.getValue(History.class);
+                Long startTime = history.getStartTime();
+                callback.onGetStartTime(startTime);
+                if (idlingResource != null) {
+                    idlingResource.setIdleState(true);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                callback.onCancelled(databaseError.getMessage());
+                if (idlingResource != null) {
+                    idlingResource.setIdleState(true);
+                }
+            }
+        });
     }
 
     @Override
@@ -206,6 +242,185 @@ public class RemoteDataSource implements DataSource {
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
                         callBack.onCancelled(databaseError.getMessage());
+                        if (idlingResource != null) {
+                            idlingResource.setIdleState(true);
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void getCurrentUnixTime(final GetCurrentUnixTimeCallback callBack) {
+        Map<String, Object> value = new HashMap<>();
+        value.put("currentTime", ServerValue.TIMESTAMP);
+        databaseReference.child("unix-time").setValue(value);
+
+        final SimpleIdlingResource idlingResource = new SimpleIdlingResource();
+
+        // The IdlingResource is null in production.
+        if (idlingResource != null) {
+            idlingResource.setIdleState(false);
+        }
+
+        DatabaseReference unixTimeReference = databaseReference.child("unix-time");
+        unixTimeReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                UnixTime unixTime = dataSnapshot.getValue(UnixTime.class);
+                callBack.onGetCurrentUnixTime(unixTime.getCurrentTime());
+                if (idlingResource != null) {
+                    idlingResource.setIdleState(true);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                callBack.onCancelled(databaseError.getMessage());
+                if (idlingResource != null) {
+                    idlingResource.setIdleState(true);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void writeNewActiveParking(String uid, String carNumberPlate, String location,
+                                      long startTime, long duration, long endTime,
+                                      final WriteActiveParkingCallback callback) {
+        ActiveParking activeParking = new ActiveParking(carNumberPlate, location, startTime,
+                duration, endTime, 0, true);
+
+        DatabaseReference activeParkingReference
+                = databaseReference.child("active-parking").child(uid);
+
+        final SimpleIdlingResource idlingResource = new SimpleIdlingResource();
+
+        // The IdlingResource is null in production.
+        if (idlingResource != null) {
+            idlingResource.setIdleState(false);
+        }
+
+        activeParkingReference.setValue(activeParking)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        callback.onSuccess();
+                        if (idlingResource != null) {
+                            idlingResource.setIdleState(true);
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        callback.onFailure(e.getMessage());
+                        if (idlingResource != null) {
+                            idlingResource.setIdleState(true);
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void getActiveParking(String uid, final GetActiveParkingCallback callback) {
+        checkNotNull(callback);
+
+        final SimpleIdlingResource idlingResource = new SimpleIdlingResource();
+
+        // The IdlingResource is null in production.
+        if (idlingResource != null) {
+            idlingResource.setIdleState(false);
+        }
+
+        databaseReference.child("active-parking").child(uid)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        ActiveParking activeParking = dataSnapshot.getValue(ActiveParking.class);
+                        callback.onGetActiveParking(activeParking);
+                        if (idlingResource != null) {
+                            idlingResource.setIdleState(true);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        callback.onCancelled(databaseError.getMessage());
+                        if (idlingResource != null) {
+                            idlingResource.setIdleState(true);
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void updateTimeLeftTimerRunningEndTime(String uid, long timeLeft, boolean timerRunning,
+                                                  final UpdateTimeLeftTimerRunningEndTimeCallback callback) {
+        DatabaseReference activeParkingReference
+                = databaseReference.child("active-parking").child(uid);
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/timeLeft/", timeLeft);
+        childUpdates.put("/timerRunning/", timerRunning);
+
+        final SimpleIdlingResource idlingResource = new SimpleIdlingResource();
+
+        // The IdlingResource is null in production.
+        if (idlingResource != null) {
+            idlingResource.setIdleState(false);
+        }
+
+        activeParkingReference.updateChildren(childUpdates)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        callback.onSuccess();
+                        if (idlingResource != null) {
+                            idlingResource.setIdleState(true);
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        callback.onFailure(e.getMessage());
+                        if (idlingResource != null) {
+                            idlingResource.setIdleState(true);
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void updateTimerRunning(String uid, boolean timerRunning,
+                                   final UpdateTimerRunningCallback callback) {
+        DatabaseReference activeParkingReference
+                = databaseReference.child("active-parking").child(uid);
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/timerRunning/", timerRunning);
+
+        final SimpleIdlingResource idlingResource = new SimpleIdlingResource();
+
+        // The IdlingResource is null in production.
+        if (idlingResource != null) {
+            idlingResource.setIdleState(false);
+        }
+
+        activeParkingReference.updateChildren(childUpdates)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        callback.onSuccess();
+                        if (idlingResource != null) {
+                            idlingResource.setIdleState(true);
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        callback.onFailure(e.getMessage());
                         if (idlingResource != null) {
                             idlingResource.setIdleState(true);
                         }

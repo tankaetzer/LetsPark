@@ -56,6 +56,10 @@ public interface HomeContract {
         void showCarNumberPlateErrMsg();
 
         void showDurationErrMsg();
+
+        void showDbErrMsg(String errMsg);
+
+        void showActiveParkingUi();
     }
 
     interface Presenter extends BasePresenter {
@@ -96,5 +100,9 @@ public interface HomeContract {
         boolean checkValidCarNumberPlateAndDuration(String carNumberPlate, int duration);
 
         double determinePayment(int duration);
+
+        long unixTimeSummation(long unixTime, int hour);
+
+        long convertHourToMilliseconds(int hour);
     }
 }

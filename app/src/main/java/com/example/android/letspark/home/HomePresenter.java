@@ -31,6 +31,8 @@ public class HomePresenter implements HomeContract.Presenter {
 
     private Service.SharedPreferenceService sharedPreferenceService;
 
+    private static final String LOCATION = "Kuantan";
+
     public HomePresenter(DataSource dataSource,
                          HomeContract.View homeView,
                          Service.LocationService locationService,
@@ -250,8 +252,33 @@ public class HomePresenter implements HomeContract.Presenter {
             sharedPreferenceService.getCurrentUserUid(new Service
                     .SharedPreferenceService.GetCurrentUserUidCallback() {
                 @Override
-                public void onGetUid(String uid) {
-                    dataSource.writeNewTransaction(uid, carNumberPlate, duration, payment);
+                public void onGetUid(final String uid) {
+                    dataSource.writeNewTransaction(carNumberPlate, uid, LOCATION, duration,
+                            payment, new DataSource.GetStartTimeCallback() {
+                                @Override
+                                public void onGetStartTime(Long startTime) {
+                                    long hourInMillisecond = convertHourToMilliseconds(duration);
+                                    long endTime = unixTimeSummation(startTime, duration);
+                                    dataSource.writeNewActiveParking(uid, carNumberPlate, LOCATION,
+                                            startTime, hourInMillisecond, endTime,
+                                            new DataSource.WriteActiveParkingCallback() {
+                                                @Override
+                                                public void onSuccess() {
+                                                    homeView.showActiveParkingUi();
+                                                }
+
+                                                @Override
+                                                public void onFailure(String errMsg) {
+                                                    homeView.showDbErrMsg(errMsg);
+                                                }
+                                            });
+                                }
+
+                                @Override
+                                public void onCancelled(String errMsg) {
+                                    homeView.showDbErrMsg(errMsg);
+                                }
+                            });
                 }
             });
         }
@@ -281,5 +308,19 @@ public class HomePresenter implements HomeContract.Presenter {
         }
     }
 
+    @Override
+    public long unixTimeSummation(long unixTime, int hour) {
+        // Convert hour to minutes, then from minutes to second, after that from second to
+        // millisecond since epoch.
+        long hourInUnixTime = hour * 60 * 60 * 1000;
 
+        // TODO: uncomment for demonstration
+//        long hourInUnixTime = 15 * 1000;
+        return unixTime + hourInUnixTime;
+    }
+
+    @Override
+    public long convertHourToMilliseconds(int hour) {
+        return hour * 60 * 60 * 1000;
+    }
 }
