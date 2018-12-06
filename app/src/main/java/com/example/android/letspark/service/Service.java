@@ -74,10 +74,18 @@ public interface Service {
     interface SharedPreferenceService {
         void setCurrentUserUid(String uid);
 
+        void setCurrentUserEmail(String email);
+
         void getCurrentUserUid(GetCurrentUserUidCallback callback);
+
+        void getCurrentUserEmail(GetCurrentUserEmailCallback callback);
 
         interface GetCurrentUserUidCallback {
             void onGetUid(String uid);
+        }
+
+        interface GetCurrentUserEmailCallback {
+            void onGetEmail(String email);
         }
     }
 

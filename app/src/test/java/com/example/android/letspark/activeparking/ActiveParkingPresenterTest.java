@@ -63,7 +63,8 @@ public class ActiveParkingPresenterTest {
     private String uid = "qwer";
     private String carNumberPlate = "QWER1234";
     private ActiveParking activeParking;
-
+    boolean activeParkingExist = false;
+    private double madePayment = 0;
     private Map<String, Object> time;
 
     @Before
@@ -71,19 +72,20 @@ public class ActiveParkingPresenterTest {
         // To inject the mocks in the test the initMocks method needs to be called.
         MockitoAnnotations.initMocks(this);
 
-        activeParkingPresenter = new ActiveParkingPresenter(activeParkingView, remoteDataSource,
-                sharedPreferenceService, countDownTimerService);
+        activeParkingPresenter = new ActiveParkingPresenter(madePayment, activeParkingExist,
+                activeParkingView, remoteDataSource, sharedPreferenceService, countDownTimerService);
 
         activeParking = new ActiveParking("QWER1234", "Kuantan",
                 Long.parseLong("1543765156002"), Long.parseLong("3600000"),
-                Long.parseLong("1543768756002"), Long.parseLong("3570121"), true);
+                Long.parseLong("1543768756002"), Long.parseLong("3570121"), true,
+                "xxxx", 0.45);
     }
 
     @Test
     public void createPresenter_setsThePresenterToView() {
         // Get a reference to the class under test.
-        activeParkingPresenter = new ActiveParkingPresenter(activeParkingView, remoteDataSource,
-                sharedPreferenceService, countDownTimerService);
+        activeParkingPresenter = new ActiveParkingPresenter(madePayment, activeParkingExist,
+                activeParkingView, remoteDataSource, sharedPreferenceService, countDownTimerService);
 
         // Then the presenter is set to the view.
         verify(activeParkingView).setPresenter(activeParkingPresenter);
@@ -138,7 +140,8 @@ public class ActiveParkingPresenterTest {
     public void checkActiveParkingExist_onGetUidonGetActiveParkingAndTimerIsNotRunning_showNoActiveParkingView() {
         activeParking = new ActiveParking("QWER1234", "Kuantan",
                 Long.parseLong("1543765156002"), Long.parseLong("3600000"),
-                Long.parseLong("1543768756002"), Long.parseLong("3570121"), false);
+                Long.parseLong("1543768756002"), Long.parseLong("3570121"), false,
+                "xxxx", 0.45);
 
         activeParkingPresenter.checkActiveParkingExist();
 

@@ -17,6 +17,8 @@ public class SharedPreferenceService implements Service.SharedPreferenceService 
 
     private static final String PREF_UID = "UID";
 
+    private static final String PREF_EMAIL = "EMAIL";
+
     @Inject
     public SharedPreferenceService(SharedPreferences sharedPref, SharedPreferences.Editor editor) {
         this.sharedPref = checkNotNull(sharedPref);
@@ -30,8 +32,20 @@ public class SharedPreferenceService implements Service.SharedPreferenceService 
     }
 
     @Override
+    public void setCurrentUserEmail(String email) {
+        editor.putString(PREF_EMAIL, email);
+        editor.commit();
+    }
+
+    @Override
     public void getCurrentUserUid(GetCurrentUserUidCallback callback) {
         String uid = sharedPref.getString(PREF_UID, "xxxxxx");
         callback.onGetUid(uid);
+    }
+
+    @Override
+    public void getCurrentUserEmail(GetCurrentUserEmailCallback callback) {
+        String email = sharedPref.getString(PREF_EMAIL, "xxxxxx");
+        callback.onGetEmail(email);
     }
 }

@@ -6,4 +6,14 @@
         android:id="@+id/drawer_history"
         android:icon="@drawable/ic_history_white"
         android:title="@string/drawer_title_history" />
+
+    <item
+        android:id="@+id/drawer_payment_method"
+        android:icon="@drawable/ic_payment_black"
+        android:title="@string/drawer_title_payment_method" />
+
+    <item
+        android:id="@+id/drawer_sign_out"
+        android:icon="@drawable/ic_exit_to_app_black"
+        android:title="@string/drawer_title_sign_out" />
 </menu>

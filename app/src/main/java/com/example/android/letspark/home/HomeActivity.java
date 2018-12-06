@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.braintreepayments.api.dropin.DropInRequest;
 import com.example.android.letspark.LetsParkApp;
 import com.example.android.letspark.R;
 import com.example.android.letspark.data.RemoteDataSource;
@@ -19,17 +20,24 @@ import com.example.android.letspark.service.ConnectivityService;
 import com.example.android.letspark.service.DistanceMatrixService;
 import com.example.android.letspark.service.LocationService;
 import com.example.android.letspark.service.SharedPreferenceService;
+import com.example.android.letspark.signinsignup.SignInSignUpActivity;
 import com.example.android.letspark.utility.ActivityUtils;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import javax.inject.Inject;
 
 import static com.example.android.letspark.addremovecar.AddRemoveCarActivity.REQUEST_ADD_REMOVE_CAR;
+import static com.example.android.letspark.payment.PaymentActivity.BRAIN_TREE_TOKENIZATION_KEY;
 
 public class HomeActivity extends AppCompatActivity {
 
     public static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     public static final int REQUEST_CHECK_SETTINGS = 2;
+
+    public static final int REQUEST_ADD_PAYMENT = 3;
 
     public static String EXTRA_CAR_NUMBER_PLATE = "WWW1234";
 
@@ -136,6 +144,26 @@ public class HomeActivity extends AppCompatActivity {
                                 Intent intent = new Intent(HomeActivity.this,
                                         HistoryActivity.class);
                                 startActivity(intent);
+                                break;
+                            case R.id.drawer_sign_out:
+                                AuthUI.getInstance()
+                                        .signOut(HomeActivity.this)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                // Navigate user to sign in screen after
+                                                // successfully sign out.
+                                                Intent intent
+                                                        = new Intent(HomeActivity.this,
+                                                        SignInSignUpActivity.class);
+                                                startActivity(intent);
+                                            }
+                                        });
+                                break;
+                            case R.id.drawer_payment_method:
+                                DropInRequest dropInRequest = new DropInRequest()
+                                        .clientToken(BRAIN_TREE_TOKENIZATION_KEY);
+                                intent = dropInRequest.getIntent(HomeActivity.this);
+                                startActivityForResult(intent, REQUEST_ADD_PAYMENT);
                                 break;
                             default:
                                 break;

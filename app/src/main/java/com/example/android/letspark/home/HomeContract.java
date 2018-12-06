@@ -60,6 +60,22 @@ public interface HomeContract {
         void showDbErrMsg(String errMsg);
 
         void showActiveParkingUi();
+
+        void showNotInParkingEnforcementPeriodMsg();
+
+        void showActiveParkingUiWithPaymentMsg(double payment);
+
+        void showActiveParkingUiWithActiveParkingExistMsg(boolean timerRunning);
+
+        void showParkingOptionDialog();
+
+        void showParkingErrMsg();
+
+        void showViolatedParkingBays(List<EmptyParkingBay> violatedParkingBayList);
+
+        void showSelectCarDurationParkingView(boolean show);
+
+        void hideHistoryPaymentMethodActiveParkingMenuItemAndFloatingActionButton();
     }
 
     interface Presenter extends BasePresenter {
@@ -95,14 +111,36 @@ public interface HomeContract {
 
         void selectDuration();
 
-        void pay(String carNumberPlate, int duration);
+        void pay(String carNumberPlate, int duration, String parking);
 
-        boolean checkValidCarNumberPlateAndDuration(String carNumberPlate, int duration);
+        boolean checkValidCarNumberPlateAndDuration(String carNumberPlate, int duration, String parking);
 
         double determinePayment(int duration);
 
         long unixTimeSummation(long unixTime, int hour);
 
         long convertHourToMilliseconds(int hour);
+
+        void checkEndTimeIsBeforeFivePm(String carNumberPlate, int duration, String parking);
+
+        long durationBetweenTwoDateTime(long currentTime);
+
+        int suggestDuration(long timeLeftToFivePmInMinute);
+
+        void checkCurrentTimeWithinParkingPeriod(String carNumberPlate, int duration, String parking);
+
+        void checkExistActiveParking(boolean validCarAndDuration, String carNumberPlate,
+                                     int duration, String parking);
+
+        void selectParking();
+
+        void loadViolatedParkingBays();
+
+        List<EmptyParkingBay> filterViolatedParkingBays(List<EmptyParkingBay> violatedParkingBayList,
+                                                        long currentUnixTime);
+
+        void loadParkingBasedOnUserRole();
+
+        boolean showActionBarButtonBasedOnUserRole();
     }
 }

@@ -141,7 +141,7 @@ public class HistoryFragment extends Fragment implements HistoryContract.View {
             TextView text_duration = rowView.findViewById(R.id.text_duration);
             TextView text_payment = rowView.findViewById(R.id.text_payment);
             TextView text_receipt_id = rowView.findViewById(R.id.text_transaction_id);
-            text_location.setText(currentHistory.getLocation());
+            text_location.setText(currentHistory.getParking());
             text_number_plate.setText(currentHistory.getCarNumberPlate());
 
             String startTime

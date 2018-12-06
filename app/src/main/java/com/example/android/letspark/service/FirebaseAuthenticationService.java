@@ -1,6 +1,7 @@
 package com.example.android.letspark.service;
 
 import android.content.Intent;
+import android.util.Log;
 
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,6 +28,7 @@ public class FirebaseAuthenticationService implements Service.FirebaseAuthentica
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             email = user.getEmail();
             uid = user.getUid();
+            Log.e("@@email", email);
             callback.onResultOk(email, uid);
         } else {
             // Sign in failed due to no internet connection.

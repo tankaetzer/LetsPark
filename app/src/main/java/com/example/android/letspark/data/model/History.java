@@ -7,7 +7,7 @@ public class History {
 
     private String carNumberPlate;
 
-    private String location;
+    private String parking;
 
     private long startTime;
 
@@ -22,13 +22,13 @@ public class History {
     }
 
     public History(String carNumberPlate,
-                   String location,
+                   String parking,
                    long startTime,
                    String transactionId,
                    double payment,
                    int duration) {
         this.carNumberPlate = carNumberPlate;
-        this.location = location;
+        this.parking = parking;
         this.startTime = startTime;
         this.transactionId = transactionId;
         this.payment = payment;
@@ -43,12 +43,12 @@ public class History {
         this.carNumberPlate = carNumberPlate;
     }
 
-    public String getLocation() {
-        return location;
+    public String getParking() {
+        return parking;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setParking(String parking) {
+        this.parking = parking;
     }
 
     public Long getStartTime() {

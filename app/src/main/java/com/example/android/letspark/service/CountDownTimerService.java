@@ -11,6 +11,10 @@ public class CountDownTimerService implements Service.CountDownTimerService {
 
     @Override
     public void startService(long timeLeft, final GetServiceCallback callback) {
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+
         countDownTimer = new CountDownTimer(timeLeft, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {

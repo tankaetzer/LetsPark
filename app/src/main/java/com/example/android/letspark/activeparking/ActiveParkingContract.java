@@ -22,6 +22,16 @@ public interface ActiveParkingContract {
         void showProgressBar(boolean show);
 
         void showExpiringOrExpiredNotification(String carNumberPlate, int notificationType);
+
+        void showExtendDurationOptionDialog();
+
+        void showExtendSuccessfullyMsg();
+
+        void showPaymentMade(String payment);
+
+        void showActiveParkingExistMsg();
+
+        void showEndTimeNotInParkingEnforcementPeriodMsg();
     }
 
     interface Presenter extends BasePresenter {
@@ -30,5 +40,23 @@ public interface ActiveParkingContract {
         void stop();
 
         void checkActiveParkingExist();
+
+        void selectDuration();
+
+        void extend(int duration);
+
+        void formatAndShowPayment();
+
+        void showActiveParkingExistMsg();
+
+        double determinePayment(int duration);
+
+        long convertHourToMilliseconds(int hour);
+
+        void checkEndTimeIsBeforeFivePm(int duration);
+
+        long durationBetweenTwoDateTime(long currentTime);
+
+        int suggestDeductDuration(long timeDueAfterFivePmInMinute);
     }
 }

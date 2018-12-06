@@ -1,9 +1,11 @@
 package com.example.android.letspark.activeparking;
 
+import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -20,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.example.android.letspark.R;
@@ -38,6 +41,11 @@ public class ActiveParkingFragment extends Fragment implements ActiveParkingCont
     public static final int TYPE_EXPIRED = 1;
     private View root;
     private ProgressBar progressBar;
+    private RadioButton radio_one_hour;
+    private RadioButton radio_two_hours;
+    private RadioButton radio_three_hours;
+    private RadioButton radio_four_hours;
+    private RadioButton radio_one_day;
     private TextView text_hours;
     private TextView text_minutes;
     private TextView text_seconds;
@@ -45,9 +53,11 @@ public class ActiveParkingFragment extends Fragment implements ActiveParkingCont
     private TextView text_location;
     private TextView text_car_number_plate;
     private TextView text_no_active_parking;
+    private FloatingActionButton fab_extend;
     private ActiveParkingContract.Presenter activeParkingPresenter;
     private View constraintLayout_active_parking;
     private Context context;
+    private int duration = 0;
 
     public ActiveParkingFragment() {
         // Require empty constructor so it can be instantiated when restoring Activity's state.
@@ -85,12 +95,12 @@ public class ActiveParkingFragment extends Fragment implements ActiveParkingCont
         constraintLayout_active_parking = root.findViewById(R.id.constraintLayout_active_parking);
 
         // Set up floating action button
-        FloatingActionButton fab = getActivity().findViewById(R.id.fab_extend);
+        fab_extend = getActivity().findViewById(R.id.fab_extend);
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        fab_extend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                activeParkingPresenter.selectDuration();
             }
         });
 
@@ -100,6 +110,8 @@ public class ActiveParkingFragment extends Fragment implements ActiveParkingCont
     @Override
     public void onStart() {
         super.onStart();
+        activeParkingPresenter.formatAndShowPayment();
+        activeParkingPresenter.showActiveParkingExistMsg();
         activeParkingPresenter.checkActiveParkingExist();
     }
 
@@ -141,9 +153,11 @@ public class ActiveParkingFragment extends Fragment implements ActiveParkingCont
         if (show) {
             text_no_active_parking.setVisibility(View.VISIBLE);
             constraintLayout_active_parking.setVisibility(View.GONE);
+            fab_extend.setVisibility(View.GONE);
         } else {
             text_no_active_parking.setVisibility(View.GONE);
             constraintLayout_active_parking.setVisibility(View.VISIBLE);
+            fab_extend.setVisibility(View.VISIBLE);
         }
     }
 
@@ -229,6 +243,75 @@ public class ActiveParkingFragment extends Fragment implements ActiveParkingCont
         } else if (notificationType == TYPE_EXPIRED) {
             notificationManager.notify(1, expiredBuilder.build());
         }
+    }
+
+    @Override
+    public void showExtendDurationOptionDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        // Get the layout inflater
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+
+        // Inflate and set the layout for the dialog.
+        // Pass null as the parent view because its going in the dialog layout.
+        View dialogView = inflater.inflate(R.layout.dialog_select_duration, null);
+
+        radio_one_hour = dialogView.findViewById(R.id.radio_one_hour);
+        radio_two_hours = dialogView.findViewById(R.id.radio_two_hours);
+        radio_three_hours = dialogView.findViewById(R.id.radio_three_hours);
+        radio_four_hours = dialogView.findViewById(R.id.radio_four_hours);
+        radio_one_day = dialogView.findViewById(R.id.radio_one_day);
+
+        builder.setView(dialogView)
+                // Add action buttons
+                .setTitle(getString(R.string.active_parking_dialog_select_extend_duration))
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (radio_one_hour.isChecked()) {
+                            duration = 1;
+                        } else if (radio_two_hours.isChecked()) {
+                            duration = 2;
+                        } else if (radio_three_hours.isChecked()) {
+                            duration = 3;
+                        } else if (radio_four_hours.isChecked()) {
+                            duration = 4;
+                        } else if (radio_one_day.isChecked()) {
+                            duration = 9;
+                        } else {
+                            duration = 0;
+                        }
+                        activeParkingPresenter.checkEndTimeIsBeforeFivePm(duration);
+                    }
+                })
+                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .create();
+
+        builder.show();
+    }
+
+    @Override
+    public void showExtendSuccessfullyMsg() {
+        showMessage(getString(R.string.active_parking_extend_successfully_msg));
+    }
+
+    @Override
+    public void showPaymentMade(String payment) {
+        showMessage(payment);
+    }
+
+    @Override
+    public void showActiveParkingExistMsg() {
+        showMessage(getString(R.string.active_parking_active_parking_exist));
+    }
+
+    @Override
+    public void showEndTimeNotInParkingEnforcementPeriodMsg() {
+        showMessage(getString(R.string.active_parking_enforcement_period_msg));
     }
 
     private void showMessage(String message) {

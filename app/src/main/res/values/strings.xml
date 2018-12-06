@@ -24,6 +24,7 @@
     <string name="error_enter_car_number_plate">Enter car number plate</string>
     <string name="hint_enter_car_number_late">Enter car number plate</string>
     <string name="home_dialog_title_select_duration">Select Duration</string>
+    <string name="home_dialog_title_select_parking">Select Parking</string>
     <string name="home_empty_car_number_plate_error">Please select a car.</string>
     <string name="home_empty_duration_error">Please select a duration.</string>
     <string name="home_radio_four_hours">4 hours</string>
@@ -57,4 +58,20 @@
     <string name="title_activity_car">Car</string>
     <string name="title_activity_history">History</string>
     <string name="title_activity_motorist_home">LetsPark</string>
+    <string name="active_parking_dialog_select_extend_duration">Select Extend Duration</string>
+    <string name="active_parking_extend_successfully_msg">Extend successfully!</string>
+    <string name="active_parking_enforcement_period_msg">Extended end time out of parking enforcement period, 8:00 AM to 5:00 PM.</string>
+    <string name="home_parking_enforcement_period_msg">You are not in parking enforcement period, 8:00 AM to 5:00 PM.</string>
+    <string name="active_parking_active_parking_exist">You have an active parking now.</string>
+    <string name="drawer_title_sign_out">Sign out</string>
+    <string name="drawer_title_payment_method">Payment method</string>
+    <string name="home_select_parking">Select parking</string>
+    <string name="home_radio_kk3_1">KK3–1</string>
+    <string name="home_radio_kk3_2">KK3–2</string>
+    <string name="home_radio_kk3_3">KK3–3</string>
+    <string name="home_radio_kk3_4">KK3–4</string>
+    <string name="home_radio_lib_1">LIB–1</string>
+    <string name="home_radio_lib_2">LIB–2</string>
+    <string name="home_radio_lib_3">LIB–3</string>
+    <string name="home_empty_parking_error">Please select a parking.</string>
 </resources>

@@ -33,6 +33,10 @@ public class ActiveParkingActivity extends AppCompatActivity {
     @Nullable
     private SimpleIdlingResource idlingResource;
 
+    public static final String EXTRA_PAYMENT = "PAYMENT";
+
+    public static final String EXTRA_ACTIVE_PARKING_EXIST = "EXIST_ACTIVE_PARKING";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +50,11 @@ public class ActiveParkingActivity extends AppCompatActivity {
 
         // Enable the Up button.
         ab.setDisplayHomeAsUpEnabled(true);
+
+        // Get the requested payment.
+        double madePayment = getIntent().getDoubleExtra(EXTRA_PAYMENT, 0);
+        boolean activeParkingExist = getIntent().getBooleanExtra(EXTRA_ACTIVE_PARKING_EXIST,
+                false);
 
         activeParkingFragment = (ActiveParkingFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.contentFrame);
@@ -62,8 +71,8 @@ public class ActiveParkingActivity extends AppCompatActivity {
 
         // TODO: Improve code by injecting dependency using Dagger 2
         // Create the presenter.
-        new ActiveParkingPresenter(activeParkingFragment, remoteDataSource, sharedPreferenceService,
-                countDownTimerService);
+        new ActiveParkingPresenter(madePayment, activeParkingExist, activeParkingFragment,
+                remoteDataSource, sharedPreferenceService, countDownTimerService);
     }
 
     /**

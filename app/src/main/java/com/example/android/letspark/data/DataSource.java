@@ -22,15 +22,15 @@ public interface DataSource {
 
     void deleteCar(String uid, String key, LoadUserCarsCallBack callBack);
 
-    void writeNewTransaction(String carNumberPlate, String uid, String location, int duration,
-                             double payment, GetStartTimeCallback callback);
+    void writeNewTransaction(String carNumberPlate, String uid, String parking, int duration,
+                             double payment, GetStartTimeAndTransactionIdCallback callback);
 
     void getUserHistory(String uid, LoadUserHistoriesCallBack callBack);
 
     void getCurrentUnixTime(GetCurrentUnixTimeCallback callBack);
 
-    void writeNewActiveParking(String uid, String carNumberPlate, String location, long startTime,
-                               long duration, long endTime, WriteActiveParkingCallback callback);
+    void writeNewActiveParking(String uid, String carNumberPlate, String parking, long startTime,
+                               long duration, long endTime, String transactionId, double payment, WriteActiveParkingCallback callback);
 
     void getActiveParking(String uid, GetActiveParkingCallback callback);
 
@@ -38,6 +38,10 @@ public interface DataSource {
                                            UpdateTimeLeftTimerRunningEndTimeCallback callback);
 
     void updateTimerRunning(String uid, boolean timerRunning, UpdateTimerRunningCallback callback);
+
+    void updateExistTransaction(String uid, String transactionId, int duration, double payment);
+
+    void getViolatedParkingBays(LoadViolatedParkingBaysCallBack callBack);
 
     interface LoadEmptyParkingBaysCallBack {
         void onEmptyParkingBaysLoaded(List<EmptyParkingBay> emptyParkingBayList);
@@ -57,8 +61,8 @@ public interface DataSource {
         void onCancelled(String errMsg);
     }
 
-    interface GetStartTimeCallback {
-        void onGetStartTime(Long startTime);
+    interface GetStartTimeAndTransactionIdCallback {
+        void onGetStartTime(Long startTime, String transactionId);
 
         void onCancelled(String errMsg);
     }
@@ -91,5 +95,11 @@ public interface DataSource {
         void onSuccess();
 
         void onFailure(String errMsg);
+    }
+
+    interface LoadViolatedParkingBaysCallBack {
+        void onViolatedParkingBaysLoaded(List<EmptyParkingBay> violatedParkingBayList);
+
+        void onDataNotAvailable();
     }
 }

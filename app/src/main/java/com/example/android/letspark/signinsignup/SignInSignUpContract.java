@@ -17,7 +17,7 @@ public interface SignInSignUpContract {
 
         void closeActivity();
 
-        void showHomeUi(String uid);
+        void showHomeUi();
     }
 
     interface Presenter extends BasePresenter {

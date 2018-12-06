@@ -35,6 +35,8 @@ public class RemoteDataSource implements DataSource {
 
     private List<EmptyParkingBay> emptyParkingBayList;
 
+    private List<EmptyParkingBay> violatedParkingBayList;
+
     private List<Car> carList;
 
     private List<History> historyList;
@@ -65,7 +67,8 @@ public class RemoteDataSource implements DataSource {
                             emptyParkingBay.getLng(),
                             emptyParkingBay.getSnippet(),
                             emptyParkingBay.getRate(),
-                            emptyParkingBay.getVacancy()));
+                            emptyParkingBay.getVacancy(),
+                            emptyParkingBay.getEndTime()));
                 }
                 callBack.onEmptyParkingBaysLoaded(emptyParkingBayList);
             }
@@ -158,14 +161,14 @@ public class RemoteDataSource implements DataSource {
         }
     }
 
-    // TODO: delete once payment feature is done
     @Override
-    public void writeNewTransaction(String carNumberPlate, String uid, String location,
-                                    int duration, double payment, final GetStartTimeCallback callback) {
+    public void writeNewTransaction(String carNumberPlate, String uid, String parking,
+                                    int duration, double payment,
+                                    final GetStartTimeAndTransactionIdCallback callback) {
         String key = databaseReference.push().getKey();
         Map<String, Object> value = new HashMap<>();
         value.put("carNumberPlate", carNumberPlate);
-        value.put("location", location);
+        value.put("parking", parking);
         value.put("duration", duration);
         value.put("payment", payment);
         value.put("startTime", ServerValue.TIMESTAMP);
@@ -178,7 +181,8 @@ public class RemoteDataSource implements DataSource {
             idlingResource.setIdleState(false);
         }
 
-        DatabaseReference historyReference = databaseReference.child("history").child(uid).child(key);
+        DatabaseReference historyReference
+                = databaseReference.child("history").child(uid).child(key);
 
         historyReference.setValue(value);
 
@@ -187,7 +191,8 @@ public class RemoteDataSource implements DataSource {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 History history = dataSnapshot.getValue(History.class);
                 Long startTime = history.getStartTime();
-                callback.onGetStartTime(startTime);
+                String transactionId = history.getTransactionId();
+                callback.onGetStartTime(startTime, transactionId);
                 if (idlingResource != null) {
                     idlingResource.setIdleState(true);
                 }
@@ -227,7 +232,7 @@ public class RemoteDataSource implements DataSource {
                         for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                             History history = postSnapshot.getValue(History.class);
                             historyList.add(new History(history.getCarNumberPlate(),
-                                    history.getLocation(),
+                                    history.getParking(),
                                     history.getStartTime(),
                                     history.getTransactionId(),
                                     history.getPayment(),
@@ -284,11 +289,11 @@ public class RemoteDataSource implements DataSource {
     }
 
     @Override
-    public void writeNewActiveParking(String uid, String carNumberPlate, String location,
+    public void writeNewActiveParking(String uid, String carNumberPlate, String parking,
                                       long startTime, long duration, long endTime,
-                                      final WriteActiveParkingCallback callback) {
-        ActiveParking activeParking = new ActiveParking(carNumberPlate, location, startTime,
-                duration, endTime, 0, true);
+                                      String transactionId, double payment, final WriteActiveParkingCallback callback) {
+        ActiveParking activeParking = new ActiveParking(carNumberPlate, parking, startTime,
+                duration, endTime, 0, true, transactionId, payment);
 
         DatabaseReference activeParkingReference
                 = databaseReference.child("active-parking").child(uid);
@@ -319,6 +324,13 @@ public class RemoteDataSource implements DataSource {
                         }
                     }
                 });
+
+        DatabaseReference parkingReference
+                = databaseReference.child("empty-parking-bay").child(parking);
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/endTime/", endTime);
+        parkingReference.updateChildren(childUpdates);
     }
 
     @Override
@@ -424,6 +436,47 @@ public class RemoteDataSource implements DataSource {
                         if (idlingResource != null) {
                             idlingResource.setIdleState(true);
                         }
+                    }
+                });
+    }
+
+    @Override
+    public void updateExistTransaction(String uid, String transactionId, int duration, double payment) {
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/duration/", duration);
+        childUpdates.put("/payment/", payment);
+
+        databaseReference.child("history").child(uid).child(transactionId).updateChildren(childUpdates);
+    }
+
+    @Override
+    public void getViolatedParkingBays(final LoadViolatedParkingBaysCallBack callBack) {
+        checkNotNull(callBack);
+        violatedParkingBayList = new ArrayList<>();
+
+        databaseReference.child("empty-parking-bay")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        violatedParkingBayList.clear();
+                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                            EmptyParkingBay emptyParkingBay
+                                    = postSnapshot.getValue(EmptyParkingBay.class);
+                            violatedParkingBayList.add(new EmptyParkingBay(emptyParkingBay.getLat(),
+                                    emptyParkingBay.getLng(),
+                                    emptyParkingBay.getSnippet(),
+                                    emptyParkingBay.getRate(),
+                                    emptyParkingBay.getVacancy(),
+                                    emptyParkingBay.getEndTime()));
+                        }
+
+
+                        callBack.onViolatedParkingBaysLoaded(violatedParkingBayList);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        callBack.onDataNotAvailable();
                     }
                 });
     }

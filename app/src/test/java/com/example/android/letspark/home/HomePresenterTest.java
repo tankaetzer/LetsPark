@@ -80,6 +80,10 @@ public class HomePresenterTest {
 
     private Exception e;
 
+    private String parking = "KK3–1";
+
+    private long endTime = 0;
+
     @Before
     public void setup() {
         // To inject the mocks in the test the initMocks method needs to be called.
@@ -91,13 +95,13 @@ public class HomePresenterTest {
 
         // Add 2 empty parking bays into list.
         emptyParkingBayList = Lists.newArrayList(
-                new EmptyParkingBay(1, 1, "KK3-1", 0.7, true),
-                new EmptyParkingBay(2, 2, "KK3-2", 0.6, true));
+                new EmptyParkingBay(1, 1, "KK3-1", 0.7, true, endTime),
+                new EmptyParkingBay(2, 2, "KK3-2", 0.6, true, endTime));
 
         // Add 1 empty parking bays into list.
         filterEmptyParkingBayList = Lists.newArrayList(
-                new EmptyParkingBay(1, 1, "KK3-1", 0.7, false),
-                new EmptyParkingBay(2, 2, "KK3-2", 0.6, true));
+                new EmptyParkingBay(1, 1, "KK3-1", 0.7, false, endTime),
+                new EmptyParkingBay(2, 2, "KK3-2", 0.6, true, endTime));
     }
 
     @Test
@@ -155,16 +159,6 @@ public class HomePresenterTest {
 
         // Check whether requestLocationPermissions is called.
         verify(homeView).requestLocationPermissions();
-    }
-
-    @Test
-    public void askLocationPermission_notGrantedIsFalse_getEmptyParkingBays() {
-        homePresenter.askLocationPermission(false,
-                false);
-
-        // Check whether loadEmptyParkingBays is called.
-        verify(remoteDataSource)
-                .getEmptyParkingBays(loadEmptyParkingBaysCallBackArgumentCaptor.capture());
     }
 
     /**
@@ -390,7 +384,7 @@ public class HomePresenterTest {
         int duration = 1;
         boolean valid;
 
-        valid = homePresenter.checkValidCarNumberPlateAndDuration(carNumberPlate, duration);
+        valid = homePresenter.checkValidCarNumberPlateAndDuration(carNumberPlate, duration, parking);
 
         verify(homeView).showCarNumberPlateErrMsg();
 
@@ -403,7 +397,7 @@ public class HomePresenterTest {
         int duration = 0;
         boolean valid;
 
-        valid = homePresenter.checkValidCarNumberPlateAndDuration(carNumberPlate, duration);
+        valid = homePresenter.checkValidCarNumberPlateAndDuration(carNumberPlate, duration, parking);
 
         verify(homeView).showDurationErrMsg();
 
@@ -416,7 +410,7 @@ public class HomePresenterTest {
         int duration = 1;
         boolean valid;
 
-        valid = homePresenter.checkValidCarNumberPlateAndDuration(carNumberPlate, duration);
+        valid = homePresenter.checkValidCarNumberPlateAndDuration(carNumberPlate, duration, parking);
 
         assertThat(true, is(valid));
     }

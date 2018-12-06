@@ -11,6 +11,8 @@ import com.example.android.letspark.service.FirebaseAuthenticationModule;
 import com.example.android.letspark.service.LocationServiceModule;
 import com.example.android.letspark.service.SharedPreferenceModule;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
 /**
  * Create LetsParkAppComponent and define getLetsParkAppComponent so that it can be assessed in all
  * classes.
@@ -30,6 +32,7 @@ public class LetsParkApp extends Application {
                 .remoteDataSourceModule(new RemoteDataSourceModule())
                 .sharedPreferenceModule(new SharedPreferenceModule(getApplicationContext()))
                 .build();
+        JodaTimeAndroid.init(this);
     }
 
     public LetsParkAppComponent getLetsParkAppComponent() {

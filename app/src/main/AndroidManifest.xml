@@ -3,7 +3,6 @@
     package="com.example.android.letspark">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
@@ -58,6 +57,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".home.HomeActivity" />
         </activity>
+        <activity android:name=".payment.PaymentActivity" />
     </application>
 
 </manifest>

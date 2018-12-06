@@ -7,7 +7,9 @@ public class ActiveParking {
 
     private String carNumberPlate;
 
-    private String location;
+    private String parking;
+
+    private String transactionId;
 
     private long startTime;
 
@@ -19,19 +21,24 @@ public class ActiveParking {
 
     private boolean timerRunning;
 
+    private double payment;
+
     public ActiveParking() {
         // Default constructor required for calls to DataSnapshot.getValue(ActiveParking.class).
     }
 
-    public ActiveParking(String carNumberPlate, String location, long startTime, long duration,
-                         long endTime, long timeLeft, boolean timerRunning) {
+    public ActiveParking(String carNumberPlate, String parking, long startTime, long duration,
+                         long endTime, long timeLeft, boolean timerRunning, String transactionId,
+                         double payment) {
         this.carNumberPlate = carNumberPlate;
-        this.location = location;
+        this.parking = parking;
         this.startTime = startTime;
         this.duration = duration;
         this.endTime = endTime;
         this.timeLeft = timeLeft;
         this.timerRunning = timerRunning;
+        this.transactionId = transactionId;
+        this.payment = payment;
     }
 
     public String getCarNumberPlate() {
@@ -42,12 +49,12 @@ public class ActiveParking {
         this.carNumberPlate = carNumberPlate;
     }
 
-    public String getLocation() {
-        return location;
+    public String getParking() {
+        return parking;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setParking(String parking) {
+        this.parking = parking;
     }
 
     public long getStartTime() {
@@ -88,5 +95,21 @@ public class ActiveParking {
 
     public void setTimerRunning(boolean timerRunning) {
         this.timerRunning = timerRunning;
+    }
+
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    public double getPayment() {
+        return payment;
+    }
+
+    public void setPayment(double payment) {
+        this.payment = payment;
     }
 }

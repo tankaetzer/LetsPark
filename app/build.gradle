@@ -20,6 +20,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        //TODO: remember to do UI testing with following added.
+        exclude 'META-INF/proguard/androidx-annotations.pro'
+    }
 }
 
 dependencies {
@@ -94,6 +98,12 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.4.1'
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
+
+    // Joda Time
+    implementation 'net.danlew:android.joda:2.10.1'
+
+    // Braintree payment Drop-In UI
+    implementation 'com.braintreepayments.api:drop-in:3.7.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -92,7 +92,7 @@ public class SignInSignUpFragment extends Fragment implements SignInSignUpContra
     }
 
     @Override
-    public void showHomeUi(String uid) {
+    public void showHomeUi() {
         Intent intent = new Intent(getContext(), HomeActivity.class);
         startActivity(intent);
     }

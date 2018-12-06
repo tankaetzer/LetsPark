@@ -45,9 +45,10 @@ public class SignInSignUpPresenter implements SignInSignUpContract.Presenter {
                     new Service.FirebaseAuthenticationService.GetCurrentUserResponseCallback() {
                         @Override
                         public void onResultOk(String email, String uid) {
-                            signInSignUpView.showHomeUi(uid);
+                            signInSignUpView.showHomeUi();
                             dataSource.writeNewUser(uid, email);
                             sharedPreferenceService.setCurrentUserUid(uid);
+                            sharedPreferenceService.setCurrentUserEmail(email);
                         }
 
                         @Override
